@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def index():  # put application's code here
+def index():
     return render_template("index.html")
 
 @app.route('/cad')
