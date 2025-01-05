@@ -1,7 +1,13 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
+
+@app.context_processor
+def inject_active_route():
+    # Provide the current route name to all templates
+    #print(request.endpoint)
+    return {'active_route': request.endpoint}
 
 @app.route('/')
 def index():
