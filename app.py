@@ -9,48 +9,48 @@ def index():
 
 #      **CAD section**
 
-@app.route('/cad/drivetrains')
-def cad_slides_page():
-    return render_template("ftc/cad/drivetrains.html")
-
-@app.route('/cad/passiveIntakes')
-def cad_intake_page():
-    return render_template("ftc/cad/passiveIntakes.html")
-
-@app.route('/cad/activeIntakes')
-def cad_claw_page():
-    return render_template("ftc/cad/activeIntakes.html")
-
-@app.route('/cad/transfers')
-def cad_slides_page():
-    return render_template("ftc/cad/drivetrains.html")
-
-@app.route('/cad/outtakes')
-def cad_outtake_page():
-    return render_template("ftc/cad/outtakes.html")
+@app.route('/cad/active-intakes')
+def cad_active_intakes_page():
+    return render_template("ftc/cad/active-intakes.html")
 
 @app.route('/cad/arms')
-def cad_slides_page():
+def cad_arms_page():
     return render_template("ftc/cad/arms.html")
 
-@app.route('/cad/linearMotionGuides')
-def cad_slides_page():
-    return render_template("ftc/cad/linearMotionGuides.html")
+@app.route('/cad/dead-wheels')
+def cad_dead_wheels_page():
+    return render_template("ftc/cad/dead-wheels.html")
 
-@app.route('/cad/deadWheels')
-def cad_slides_page():
-    return render_template("ftc/cad/deadWheels.html")
+@app.route('/cad/drivetrains')
+def cad_drivetrains_page():
+    return render_template("ftc/cad/drivetrains.html")
+
+@app.route('/cad/linear-motion-guides')
+def cad_linear_motions_guides_page():
+    return render_template("ftc/cad/linear-motions-guides.html")
 
 @app.route('/cad/linkages')
-def cad_slides_page():
+def cad_linkages_page():
     return render_template("ftc/cad/linkages.html")
 
-@app.route('/cad/powerTransmissions')
-def cad_slides_page():
-    return render_template("ftc/cad/powerTransmissions.html")
+@app.route('/cad/outtakes')
+def cad_outtakes_page():
+    return render_template("ftc/cad/outtakes.html")
+
+@app.route('/cad/passive-intakes')
+def cad_passive_intakes_page():
+    return render_template("ftc/cad/passive-intakes.html")
+
+@app.route('/cad/power-transmissions')
+def cad_power_transmissions_page():
+    return render_template("ftc/cad/power-transmissions.html")
+
+@app.route('/cad/transfers')
+def cad_transfers_page():
+    return render_template("ftc/cad/transfers.html")
 
 @app.route('/cad/turrets')
-def cad_slides_page():
+def cad_turrets_page():
     return render_template("ftc/cad/turrets.html")
 
 #      **Code section**
