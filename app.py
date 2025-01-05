@@ -7,17 +7,9 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-@app.route('/cad')
-def cad():
-    return render_template("cad.html")
-
-@app.route('/code')
-def code():
-    return render_template("code.html")
-
-@app.route('/portfolios')
+@app.route('/cad/intake')
 def portfolios():
-    return render_template("portfolios.html")
+    return render_template("cad/intake.html")
 
 
 if __name__ == '__main__':
