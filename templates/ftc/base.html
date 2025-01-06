@@ -77,21 +77,73 @@
                     <a class="nav-link {% if active_route == 'portfolios' %}active{% endif %}" href="/portfolios">Portfolios</a>
                 </li>
             </ul>
+        <!--
             <form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-primary" type="submit">Search</button>
             </form>
+         -->
         </div>
     </div>
 </nav>
 
 {% block body %}{% endblock %}
 
+<!-- Search and filter bar -->
+<div class="bg-light py-2 border rounded" style="margin: 10px;">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <!-- Dropdown Container -->
+            <div class="d-flex flex-wrap flex-grow-1">
+                <form method="POST" action="{{ url_for('filter_by_year') }}">
+                    <div class="dropdown me-2">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            Year Used
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="#" onclick="this.closest('form').submit();">2025</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="this.closest('form').submit();">2024</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="this.closest('form').submit();">2023</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="this.closest('form').submit();">2022</a></li>
+                        </ul>
+                    </div>
+                </form>
+
+                <!-- Dropdown 2 -->
+                <div class="dropdown me-2">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        Category
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                        <li><a class="dropdown-item" href="#option1">Option 1</a></li>
+                        <li><a class="dropdown-item" href="#option2">Option 2</a></li>
+                        <li><a class="dropdown-item" href="#option3">Option 3</a></li>
+                    </ul>
+                </div>
+
+                <!-- Add more dropdowns here -->
+            </div>
+
+            <!-- Search Form -->
+            <div class="ms-auto">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search here..." aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Card -->
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
+    {% if records %}
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             {% for record in records %}
+                {% if year_chosen in record[7] %}
                 <div class="col mb-5">
                     <div class="card h-100">
                         <!-- Preview image-->
@@ -115,13 +167,15 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
                 <!-- Popover -->
                 <div class="portfolio-modal modal fade" id="popover{{ record[0] }}" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="close-modal" data-bs-dismiss="modal">
-                                <img src="{{ url_for('static', filename='/images/close-icon.svg') }}" alt="Close modal" />
+                                <!-- <img src="{{ url_for('static', filename='/images/close-icon.svg') }}" alt="Close modal" /> -->
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="container" style="margin-top: auto; margin-bottom: auto;">
                                 <div class="row justify-content-center">
@@ -160,6 +214,20 @@
                 </div>
             {% endfor %}
         </div>
+    {% else %}
+        <!-- No results found -->
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            <div class="col mb-5">
+                <div class="card h-100">
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <h5 class="fw-bolder">No Results Found</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     </div>
 </section>
 

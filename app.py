@@ -22,6 +22,15 @@ def fetch_data_from_db(section, table_name):
     connection.close()
     return records
 
+@app.route("/filter_by_year", methods=['POST'])
+def filter_by_year():
+    template_name = request.endpoint
+    if request.method == 'POST':
+        selected_value = request.form.get('selected_item')
+        print(selected_value)
+
+    return render_template(template_name)
+
 @app.route('/')
 def index():
     return render_template("ftc/index.html")
