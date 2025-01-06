@@ -123,31 +123,32 @@
                             <div class="close-modal" data-bs-dismiss="modal">
                                 <img src="{{ url_for('static', filename='/images/close-icon.svg') }}" alt="Close modal" />
                             </div>
-                            <div class="container">
+                            <div class="container" style="margin-top: auto; margin-bottom: auto;">
                                 <div class="row justify-content-center">
-                                    <div class="col-lg-8">
-                                        <div class="modal-body">
-                                            <div class="row">
+                                    <div class="col-lg-11">
+                                        <div class="modal-body" style="margin-top: 2rem;">
+                                            <div class="row" style="align-items: center;">
                                                 <!-- Text Content -->
-                                                <div class="col-md-6">
+                                                <div class="col-sm-6">
                                                     <!-- Name-->
                                                     <h2 class="fw-bolder">{{ record[1] }}</h2>
                                                     <!-- Author-->
-                                                    <h5>By: {{ record[2] }}</h5>
+                                                    <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record[2] }}</strong></h5>
                                                     <p><strong>Used in Competition:</strong> {{ "Yes" if record[5] else "No" }}</p>
                                                     <p><strong>Years used:</strong> {{ record[7] }}</p>
                                                     <p><strong>Team Number:</strong> {{ record[6] }}</p>
                                                     <!-- Product description-->
-                                                    <p><strong>Description: </strong>{{ record[4] }}</p>
+                                                    <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;"><strong>Description: </strong>{{ record[4] }}</p>
                                                 </div>
                                                 <!-- Preview Image -->
-                                                <div class="col-md-6 text-center">
+                                                <div class="col-sm-6 text-center">
                                                     <img src="{{ record[3] }}" class="img-fluid d-block mx-auto" alt="preview-image">
                                                 </div>
-                                                <div class="text-center">
+                                                <div class="text-center" style="padding: 1rem; height: 6rem;">
                                                     <a href="{{ record[8] }}">
-                                                        <img class="btn btn-outline-dark mt-auto" src="{{ url_for('static', filename='/images/onshape-logo.png') }}" alt="Onshape Logo" />
+                                                        <img class="btn btn-outline-dark mt-auto" style="margin: 0" src="{{ url_for('static', filename='/images/onshape-logo.png') }}" alt="Onshape Logo" />
                                                     </a>
+                                                    <p style="margin: 0; margin-top: 0.25rem;">View Here</p>
                                                 </div>
                                             </div>
                                         </div>
