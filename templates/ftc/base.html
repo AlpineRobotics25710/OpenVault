@@ -2,282 +2,173 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <link rel="icon" href="/images/logos/favicons/andriod-chrome-512x512.png" type="image/png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-normalize.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logos/favicons/favicon.ico') }}">
     {% block head %}{% endblock %}
 </head>
 
 <body id="#page-top">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">OpenVault</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if 'cad' in active_route %}active{% endif %}" href="#" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            CAD
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item {% if active_route == 'cad_active_intakes_page' %}active{% endif %}" href="/cad/active-intakes">Active Intakes</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_arms_page' %}active{% endif %}" href="/cad/arms">Arms</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_dead_wheels_page' %}active{% endif %}" href="/cad/dead-wheels">Dead Wheels</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_drivetrains_page' %}active{% endif %}" href="/cad/drivetrains">Drivetrains</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_linear_motions_guides_page' %}active{% endif %}" href="/cad/linear-motion-guides">Linear Motion Guides</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_linkages_page' %}active{% endif %}" href="/cad/linkages">Linkages</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_outtakes_page' %}active{% endif %}" href="/cad/outtakes">Outtakes</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_passive_intakes_page' %}active{% endif %}" href="/cad/passive-intakes">Passive Intakes</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_power_transmissions_page' %}active{% endif %}" href="/cad/power-transmissions">Power Transmissions</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_transfers_page' %}active{% endif %}" href="/cad/transfers">Transfers</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'cad_turrets_page' %}active{% endif %}" href="/cad/turrets">Turrets</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if 'code' in active_route %}active{% endif %}" href="#" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            Code
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item {% if active_route == 'code_teleop_page' %}active{% endif %}" href="/code/teleop">TeleOp</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'code_auton_page' %}active{% endif %}" href="/code/auton">Auton</a></li>
-                            <li><a class="dropdown-item {% if active_route == 'code_ftclib_page' %}active{% endif %}" href="/code/ftclib">FTCLib</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if active_route == 'portfolios' %}active{% endif %}" href="/portfolios">Portfolios</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-primary" type="submit">Search</button>
-                </form>
-            </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">OpenVault</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if 'cad' in active_route %}active{% endif %}" href="#"
+                       role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        CAD
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item {% if active_route == 'cad_active_intakes_page' %}active{% endif %}"
+                               href="/cad/active-intakes">Active Intakes</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'cad_arms_page' %}active{% endif %}"
+                               href="/cad/arms">Arms</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'cad_dead_wheels_page' %}active{% endif %}"
+                               href="/cad/dead-wheels">Dead Wheels</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'cad_drivetrains_page' %}active{% endif %}"
+                               href="/cad/drivetrains">Drivetrains</a></li>
+                        <li>
+                            <a class="dropdown-item {% if active_route == 'cad_linear_motions_guides_page' %}active{% endif %}"
+                               href="/cad/linear-motion-guides">Linear Motion Guides</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'cad_linkages_page' %}active{% endif %}"
+                               href="/cad/linkages">Linkages</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'cad_outtakes_page' %}active{% endif %}"
+                               href="/cad/outtakes">Outtakes</a></li>
+                        <li>
+                            <a class="dropdown-item {% if active_route == 'cad_passive_intakes_page' %}active{% endif %}"
+                               href="/cad/passive-intakes">Passive Intakes</a></li>
+                        <li>
+                            <a class="dropdown-item {% if active_route == 'cad_power_transmissions_page' %}active{% endif %}"
+                               href="/cad/power-transmissions">Power Transmissions</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'cad_transfers_page' %}active{% endif %}"
+                               href="/cad/transfers">Transfers</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'cad_turrets_page' %}active{% endif %}"
+                               href="/cad/turrets">Turrets</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if 'code' in active_route %}active{% endif %}" href="#"
+                       role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Code
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item {% if active_route == 'code_teleop_page' %}active{% endif %}"
+                               href="/code/teleop">TeleOp</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'code_auton_page' %}active{% endif %}"
+                               href="/code/auton">Auton</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'code_ftclib_page' %}active{% endif %}"
+                               href="/code/ftclib">FTCLib</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active_route == 'portfolios' %}active{% endif %}" href="/portfolios">Portfolios</a>
+                </li>
+            </ul>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    {% block body %}{% endblock %}
+{% block body %}{% endblock %}
 
-    <!-- Section-->
-    <section class="py-5">
-        <div class="container px-4 px-lg-5 mt-5">
-            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+<!-- Section-->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            {% for record in records %}
                 <div class="col mb-5">
                     <div class="card h-100">
-                        <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
+                        <!-- Preview image-->
+                        <img class="card-img-top" src="{{ record[3] }}" alt="Preview"/>
+                        <!-- Details-->
                         <div class="card-body p-4">
                             <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">Fancy Product</h5>
-                                <!-- Product price-->
-                                $40.00 - $80.00
+                                <!-- Name-->
+                                <h5 class="fw-bolder">{{ record[1] }}</h5>
+                                <!-- Author-->
+                                <p>By: {{ record[2] }}</p>
+                                <p><strong>Team Number:</strong> {{ record[6] }}</p>
                             </div>
                         </div>
-                        <!-- Product actions-->
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            <div class="text-center">
+                                <a class="btn btn-outline-dark mt-auto" href="#" data-bs-toggle="modal" data-bs-target="#popover{{ record[0] }}">
+                                    See Details
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Sale badge-->
-                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-                        <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">Special Item</h5>
-                                <!-- Product reviews-->
-                                <div class="d-flex justify-content-center small text-warning mb-2">
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
+
+                <!-- Popover -->
+                <div class="portfolio-modal modal fade" id="popover{{ record[0] }}" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="close-modal" data-bs-dismiss="modal">
+                                <img src="{{ url_for('static', filename='/images/close-icon.svg') }}" alt="Close modal" />
+                            </div>
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-8">
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <!-- Text Content -->
+                                                <div class="col-md-6">
+                                                    <!-- Name-->
+                                                    <h2 class="fw-bolder">{{ record[1] }}</h2>
+                                                    <!-- Author-->
+                                                    <h5>By: {{ record[2] }}</h5>
+                                                    <p><strong>Used in Competition:</strong> {{ "Yes" if record[5] else "No" }}</p>
+                                                    <p><strong>Years used:</strong> {{ record[7] }}</p>
+                                                    <p><strong>Team Number:</strong> {{ record[6] }}</p>
+                                                    <!-- Product description-->
+                                                    <p><strong>Description: </strong>{{ record[4] }}</p>
+                                                </div>
+                                                <!-- Preview Image -->
+                                                <div class="col-md-6 text-center">
+                                                    <img src="{{ record[3] }}" class="img-fluid d-block mx-auto" alt="preview-image">
+                                                </div>
+                                                <div class="text-center">
+                                                    <a href="{{ record[8] }}">
+                                                        <img class="btn btn-outline-dark mt-auto" src="{{ url_for('static', filename='/images/onshape-logo.png') }}" alt="Onshape Logo" />
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <!-- Product price-->
-                                <span class="text-muted text-decoration-line-through">$20.00</span>
-                                $18.00
                             </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
                         </div>
                     </div>
                 </div>
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Sale badge-->
-                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-                        <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">Sale Item</h5>
-                                <!-- Product price-->
-                                <span class="text-muted text-decoration-line-through">$50.00</span>
-                                $25.00
-                            </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">Popular Item</h5>
-                                <!-- Product reviews-->
-                                <div class="d-flex justify-content-center small text-warning mb-2">
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                </div>
-                                <!-- Product price-->
-                                $40.00
-                            </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Sale badge-->
-                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-                        <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">Sale Item</h5>
-                                <!-- Product price-->
-                                <span class="text-muted text-decoration-line-through">$50.00</span>
-                                $25.00
-                            </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">Fancy Product</h5>
-                                <!-- Product price-->
-                                $120.00 - $280.00
-                            </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Sale badge-->
-                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-                        <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">Special Item</h5>
-                                <!-- Product reviews-->
-                                <div class="d-flex justify-content-center small text-warning mb-2">
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                </div>
-                                <!-- Product price-->
-                                <span class="text-muted text-decoration-line-through">$20.00</span>
-                                $18.00
-                            </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">Popular Item</h5>
-                                <!-- Product reviews-->
-                                <div class="d-flex justify-content-center small text-warning mb-2">
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                    <div class="bi-star-fill"></div>
-                                </div>
-                                <!-- Product price-->
-                                $40.00
-                            </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
 
-    <footer class="py-5 bg-dark">
-        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; OpenVault 2025</p></div>
-    </footer>
+<footer class="py-5 bg-dark">
+    <div class="container"><p class="m-0 text-center text-white">Copyright &copy; OpenVault 2025</p></div>
+</footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>

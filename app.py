@@ -1,3 +1,4 @@
+import sqlite3
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -9,6 +10,18 @@ def inject_active_route():
     #print(request.endpoint)
     return {'active_route': request.endpoint}
 
+# Function to fetch data from the database
+def fetch_data_from_db(section, table_name):
+    # Connect to the database
+    connection = sqlite3.connect(f"static/databases/{section}.db")
+    cursor = connection.cursor()
+
+    # Fetch all rows from the active_intakes table
+    cursor.execute(f"SELECT * FROM {table_name}")
+    records = cursor.fetchall()
+    connection.close()
+    return records
+
 @app.route('/')
 def index():
     return render_template("ftc/index.html")
@@ -17,19 +30,23 @@ def index():
 
 @app.route('/cad/active-intakes')
 def cad_active_intakes_page():
-    return render_template("ftc/cad/active-intakes.html")
+    records = fetch_data_from_db("cad", "active_intakes")
+    return render_template("ftc/cad/active-intakes.html", records=records)
 
 @app.route('/cad/arms')
 def cad_arms_page():
-    return render_template("ftc/cad/arms.html")
+    records = fetch_data_from_db("cad", "arms")
+    return render_template("ftc/cad/arms.html", records=records)
 
 @app.route('/cad/dead-wheels')
 def cad_dead_wheels_page():
-    return render_template("ftc/cad/dead-wheels.html")
+    records = fetch_data_from_db("cad", "dead_wheels")
+    return render_template("ftc/cad/dead-wheels.html", records=records)
 
 @app.route('/cad/drivetrains')
 def cad_drivetrains_page():
-    return render_template("ftc/cad/drivetrains.html")
+    records = fetch_data_from_db("cad", "drivetrains")
+    return render_template("ftc/cad/drivetrains.html", records=records)
 
 @app.route('/cad/linear-motion-guides')
 def cad_linear_motions_guides_page():
