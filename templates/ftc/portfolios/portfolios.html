@@ -1,10 +1,11 @@
-{% extends 'ftc/bases/base.html' %}
+{% extends 'ftc/bases/portfolio-base.html' %}
 
-{% block head %}
-    <title>OpenVault - CAD - Portfolios</title>
+
+{% block intermediateHead %}
+    <title>OpenVault - Portfolios</title>
 {% endblock %}
 
-{% block body %}
+{% block header %}
     <!-- Header-->
     <header class="bg-dark py-5">
         <div class="container px-4 px-lg-5 my-5">
@@ -14,45 +15,56 @@
             </div>
         </div>
     </header>
+{% endblock %}
 
-    <!-- Sidebar -->
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-            <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-            <span class="fs-4">Sidebar</span>
-        </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="#" class="nav-link active" aria-current="page">
-                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
-                    Home
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link link-dark">
-                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
-                    Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link link-dark">
-                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
-                    Orders
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link link-dark">
-                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
-                    Products
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link link-dark">
-                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
-                    Customers
-                </a>
-            </li>
-        </ul>
+{% block filter %}
+    <!-- Search and filter bar -->
+    <div class="bg-light py-2 border rounded" style="margin: 10px;">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <!-- Dropdown Container -->
+                <div class="d-flex flex-wrap flex-grow-1">
+                    <form method="POST" action="/portfolios/{{ year_selected }}">
+                        <!-- Hidden input to store the selected year -->
+                        <input type="hidden" name="year_selected" id="year_selected" value="{{ year_selected }}">
+
+                        <div class="dropdown me-2">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Year Used
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2025'; this.closest('form').submit();">2025</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2024'; this.closest('form').submit();">2024</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2023'; this.closest('form').submit();">2023</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2022'; this.closest('form').submit();">2022</a></li>
+                            </ul>
+                        </div>
+                    </form>
+
+                    <!-- Dropdown 2 -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            Category
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                            <li><a class="dropdown-item" href="#option1">Option 1</a></li>
+                            <li><a class="dropdown-item" href="#option2">Option 2</a></li>
+                            <li><a class="dropdown-item" href="#option3">Option 3</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Add more dropdowns here -->
+                </div>
+
+                <!-- Search Form -->
+                <div class="ms-auto">
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search here..." aria-label="Search">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
