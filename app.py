@@ -109,22 +109,34 @@ def cad_turrets_page():
 
 #      **Code section**
 
-@app.route('/code/teleop')
-def code_teleop_page():
-    records = fetch_data_from_db("code", "teleop")
-    return render_template("ftc/code/teleop.html", records=records)
-
-
-@app.route('/code/auton')
-def code_auton_page():
-    records = fetch_data_from_db("code", "auton")
-    return render_template("ftc/code/auton.html", records=records)
+@app.route('/code/driver-enhancements')
+def code_driver_enhancements_page():
+    records = fetch_data_from_db("code", "driver_enhancements")
+    return render_template("ftc/code/driver-enhancements.html", records=records)
 
 
 @app.route('/code/ftclib')
 def code_ftclib_page():
-    records = fetch_data_from_db("code", "ftclib")
-    return render_template("ftc/code/ftclib.html", records=records)
+    records = fetch_data_from_db("code", "ftc_lib")
+    return render_template("ftc/code/ftc-lib.html", records=records)
+
+
+@app.route('/code/gamepad')
+def code_auton_page():
+    records = fetch_data_from_db("code", "gamepad")
+    return render_template("ftc/code/gamepad.html", records=records)
+
+
+@app.route('/code/pedro-pathing')
+def code_pedro_pathing_page():
+    records = fetch_data_from_db("code", "pedro_pathing")
+    return render_template("ftc/code/pedro-pathing.html", records=records)
+
+
+@app.route('/code/road-runner')
+def code_road_runner_page():
+    records = fetch_data_from_db("code", "road_runner")
+    return render_template("ftc/code/road-runner.html", records=records)
 
 
 @app.route('/portfolios')
