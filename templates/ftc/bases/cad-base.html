@@ -1,0 +1,144 @@
+{% extends 'ftc/bases/base.html' %}
+
+<!-- Card -->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        {% if records %}
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                {% for record in records %}
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Preview image-->
+                            <img class="card-img-top" src="{{ record[3] }}" alt="Preview"/>
+                            <!-- Details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Name-->
+                                    <h5 class="fw-bolder">{{ record[1] }}</h5>
+                                    <!-- Author-->
+                                    <p>By: {{ record[2] }}</p>
+                                    <p><strong>Team Number:</strong> {{ record[6] }}</p>
+                                </div>
+                            </div>
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center">
+                                    <a class="btn btn-outline-dark mt-auto" href="#" data-bs-toggle="modal" data-bs-target="#popover{{ record[0] }}">
+                                        See Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Popover -->
+                    <div class="portfolio-modal modal fade" id="popover{{ record[0] }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="close-modal" data-bs-dismiss="modal">
+                                    <!-- <img src="{{ url_for('static', filename='/images/close-icon.svg') }}" alt="Close modal" /> -->
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="container" style="margin-top: auto; margin-bottom: auto;">
+                                    <div class="row justify-content-center">
+                                        <div class="col-lg-11">
+                                            <div class="modal-body" style="margin-top: 2rem;">
+                                                <div class="row" style="align-items: center;">
+                                                    <!-- Text Content -->
+                                                    <div class="col-sm-6">
+                                                        <!-- Name-->
+                                                        <h2 class="fw-bolder">{{ record[1] }}</h2>
+                                                        <!-- Author-->
+                                                        <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record[2] }}</strong></h5>
+                                                        <p><strong>Used in Competition:</strong> {{ "Yes" if record[5] else "No" }}</p>
+                                                        <p><strong>Years used:</strong> {{ record[7] }}</p>
+                                                        <p><strong>Team Number:</strong> {{ record[6] }}</p>
+                                                        <!-- Product description-->
+                                                        <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;"><strong>Description: </strong>{{ record[4] }}</p>
+                                                    </div>
+                                                    <!-- Preview Image -->
+                                                    <div class="col-sm-6 text-center">
+                                                        <img src="{{ record[3] }}" class="img-fluid d-block mx-auto" alt="preview-image">
+                                                    </div>
+                                                    <div class="text-center" style="padding: 1rem; height: 6rem;">
+                                                        <a href="{{ record[8] }}">
+                                                            <img class="btn btn-outline-dark mt-auto" style="margin: 0" src="{{ url_for('static', filename='/images/onshape-logo.png') }}" alt="Onshape Logo" />
+                                                        </a>
+                                                        <p style="margin: 0; margin-top: 0.25rem;">View Here</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No results found -->
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                <div class="col mb-5">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <h5 class="fw-bolder">No Results Found</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+
+<!-- Search and filter bar -->
+<div class="bg-light py-2 border rounded" style="margin: 10px;">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <!-- Dropdown Container -->
+            <div class="d-flex flex-wrap flex-grow-1">
+                <form method="POST" action="/cad/drivetrains/{{ year_selected }}">
+                    <!-- Hidden input to store the selected year -->
+                    <input type="hidden" name="year_selected" id="year_selected" value="{{ year_selected }}">
+
+                    <div class="dropdown me-2">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            Year Used
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2025'; this.closest('form').submit();">2025</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2024'; this.closest('form').submit();">2024</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2023'; this.closest('form').submit();">2023</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2022'; this.closest('form').submit();">2022</a></li>
+                        </ul>
+                    </div>
+                </form>
+
+                <!-- Dropdown 2 -->
+                <div class="dropdown me-2">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        Category
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                        <li><a class="dropdown-item" href="#option1">Option 1</a></li>
+                        <li><a class="dropdown-item" href="#option2">Option 2</a></li>
+                        <li><a class="dropdown-item" href="#option3">Option 3</a></li>
+                    </ul>
+                </div>
+
+                <!-- Add more dropdowns here -->
+            </div>
+
+            <!-- Search Form -->
+            <div class="ms-auto">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search here..." aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
