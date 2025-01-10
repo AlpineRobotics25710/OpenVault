@@ -1,6 +1,7 @@
 {% extends 'ftc/bases/base.html' %}
 
 {% block head %}
+    <script src="{{ url_for('static', filename='/javascript/code-script.js') }}"></script>
     {% block intermediateHead %}
     {% endblock %}
 {% endblock %}
@@ -14,40 +15,53 @@
             <div class="d-flex align-items-center">
                 <!-- Dropdown Container -->
                 <div class="d-flex flex-wrap flex-grow-1">
-                    <form method="POST" action="/cad/active-intakes/{{ year_selected }}">
-                        <!-- Hidden input to store the selected year -->
-                        <input type="hidden" name="year_selected" id="year_selected" value="{{ year_selected }}">
+                    <form method="POST" action="/filter-code" id="filterForm" class="d-flex">
+                        <!-- Hidden values -->
+                        <input type="hidden" name="selectedYear" id="selectedYear" value="">
+                        <input type="hidden" name="selectedLanguage" id="selectedLanguage" value="">
+                        <input type="hidden" name="usedInComp" id="usedInComp" value="">
 
+                        <!-- Year dropdown -->
                         <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="yearDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 Year Used
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2025'; this.closest('form').submit();">2025</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2024'; this.closest('form').submit();">2024</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2023'; this.closest('form').submit();">2023</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2022'; this.closest('form').submit();">2022</a></li>
+                            <ul class="dropdown-menu" aria-labelledby="yearDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectYear('2025')">2025</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2024')">2024</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2023')">2023</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2022')">2022</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('Any')">Any</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Language dropdown -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="languageDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Language
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="languageDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectLanguage('Java')">Java</a></li>
+                                <li><a class="dropdown-item" onclick="selectLanguage('Kotlin')">Kotlin</a></li>
+                                <li><a class="dropdown-item" onclick="selectLanguage('Any')">Any</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Used in comp dropdown -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="compDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Used in Competition
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="compDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectUsedInComp('yes')">Yes</a></li>
+                                <li><a class="dropdown-item" onclick="selectUsedInComp('no')">No</a></li>
+                                <li><a class="dropdown-item" onclick="selectUsedInComp('Any')">Any</a></li>
                             </ul>
                         </div>
                     </form>
-
-                    <!-- Dropdown 2 -->
-                    <div class="dropdown me-2">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            Category
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                            <li><a class="dropdown-item" href="#option1">Option 1</a></li>
-                            <li><a class="dropdown-item" href="#option2">Option 2</a></li>
-                            <li><a class="dropdown-item" href="#option3">Option 3</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Add more dropdowns here -->
                 </div>
 
-                <!-- Search Form -->
+                <!-- Search Box -->
                 <div class="ms-auto">
                     <form class="d-flex" role="search">
                         <input class="form-control me-2" type="search" placeholder="Search here..." aria-label="Search">
@@ -107,9 +121,10 @@
                                                             <h2 class="fw-bolder">{{ record[1] }}</h2>
                                                             <!-- Author-->
                                                             <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record[9] }}</strong></h5>
+                                                            <p><strong>Team Number:</strong> {{ record[5] }}</p>
                                                             <p><strong>Used in Competition:</strong> {{ "Yes" if record[7] else "No" }}</p>
                                                             <p><strong>Years used:</strong> {{ record[8] }}</p>
-                                                            <p><strong>Team Number:</strong> {{ record[5] }}</p>
+                                                            <p><strong>Language:</strong> {{ record[6] }}</p>
                                                             <!-- Product description-->
                                                             <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;"><strong>Description: </strong>{{ record[4] }}</p>
                                                         </div>

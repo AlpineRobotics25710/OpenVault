@@ -3,6 +3,9 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
+records = []
+curr_template = ""
+
 
 @app.context_processor
 def inject_active_route():
@@ -24,14 +27,30 @@ def fetch_data_from_db(section, table_name):
     return records
 
 
-@app.route("/filter_by_year", methods=['POST'])
-def filter_by_year():
-    template_name = request.endpoint
-    if request.method == 'POST':
-        selected_value = request.form.get('selected_item')
-        print(selected_value)
+@app.route('/filter-code', methods=['POST', 'GET'])
+def filter_code():
+    year = request.form.get('selectedYear') if request.form.get('selectedYear') != "Any" else None
+    language = request.form.get('selectedLanguage') if request.form.get('selectedLanguage') != "Any" else None
+    used_in_comp = True if request.form.get('usedInComp') == "yes" else False if request.form.get('usedInComp') == "no" else None
+    print(used_in_comp)
+    filtered_records = get_filtered_code_records(year, language, used_in_comp)
+    return render_template(curr_template, records=filtered_records)
 
-    return render_template(template_name)
+
+def get_filtered_code_records(years_used=None, language=None, used_in_comp=None):
+    new_records = []
+    for record in records:
+        append = True
+        if years_used and years_used.lower() not in record[8].lower():
+            append = False
+        if language and language.lower() not in record[6].lower():
+            append = False
+        if used_in_comp is not None and used_in_comp != record[7]:
+            append = False
+        if append:
+            new_records.append(record)
+
+    return new_records
 
 
 @app.route('/')
@@ -111,13 +130,17 @@ def cad_turrets_page():
 
 @app.route('/code/driver-enhancements')
 def code_driver_enhancements_page():
+    global records, curr_template
     records = fetch_data_from_db("code", "driver_enhancements")
+    curr_template = "ftc/code/driver-enhancements.html"
     return render_template("ftc/code/driver-enhancements.html", records=records)
 
 
 @app.route('/code/ftclib')
 def code_ftclib_page():
+    global records, curr_template
     records = fetch_data_from_db("code", "ftc_lib")
+    curr_template = "ftc/code/ftc-lib.html"
     return render_template("ftc/code/ftc-lib.html", records=records)
 
 
