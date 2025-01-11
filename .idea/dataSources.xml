@@ -15,7 +15,7 @@
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/static/databases/cad.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="code" uuid="e3f95f1e-2656-4e1b-9d59-8ef7f6028677">
+    <data-source source="LOCAL" name="code.db" uuid="e3f95f1e-2656-4e1b-9d59-8ef7f6028677">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
