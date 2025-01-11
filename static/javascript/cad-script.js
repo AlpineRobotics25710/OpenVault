@@ -13,8 +13,3 @@ function selectTeamNumber(teamNumber) {
     document.getElementById('selectedTeamNumber').value = teamNumber;
     document.getElementById('filterForm').submit();
 }
-
-function selectLanguage(language) {
-    document.getElementById('selectedLanguage').value = language;
-    document.getElementById('filterForm').submit();
-}

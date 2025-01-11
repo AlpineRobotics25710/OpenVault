@@ -1,6 +1,7 @@
 {% extends 'ftc/bases/base.html' %}
 
 {% block head %}
+    <script src="{{ url_for('static', filename='/javascript/cad-script.js') }}"></script>
     {% block intermediateHead %}
     {% endblock %}
 {% endblock %}
@@ -14,37 +15,53 @@
             <div class="d-flex align-items-center">
                 <!-- Dropdown Container -->
                 <div class="d-flex flex-wrap flex-grow-1">
-                    <form method="POST" action="/cad/active-intakes/{{ year_selected }}">
-                        <!-- Hidden input to store the selected year -->
-                        <input type="hidden" name="year_selected" id="year_selected" value="{{ year_selected }}">
+                    <form method="POST" action="/filter-cad" id="filterForm" class="d-flex">
+                        <!-- Hidden values -->
+                        <input type="hidden" name="selectedYear" id="selectedYear" value="">
+                        <input type="hidden" name="selectedTeamNumber" id="selectedTeamNumber" value="">
+                        <input type="hidden" name="usedInComp" id="usedInComp" value="">
 
+                        <!-- Year dropdown -->
                         <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="yearDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 Year Used
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2025'; this.closest('form').submit();">2025</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2024'; this.closest('form').submit();">2024</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2023'; this.closest('form').submit();">2023</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2022'; this.closest('form').submit();">2022</a></li>
+                            <ul class="dropdown-menu" aria-labelledby="yearDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectYear('2025')">2025</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2024')">2024</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2023')">2023</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2022')">2022</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('Any')">Any</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Used in comp dropdown -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="compDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Used in Competition
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="compDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectUsedInComp('yes')">Yes</a></li>
+                                <li><a class="dropdown-item" onclick="selectUsedInComp('no')">No</a></li>
+                                <li><a class="dropdown-item" onclick="selectUsedInComp('Any')">Any</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Team Number dropdown -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="compDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Team Number
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="compDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('2000')">Greater than 2000</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('1500')">1500-2000</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('1000')">1000-1500</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('500')">500-1000</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('<500')">Less than 500</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('Any')">Any</a></li>
                             </ul>
                         </div>
                     </form>
-
-                    <!-- Dropdown 2 -->
-                    <div class="dropdown me-2">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            Category
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                            <li><a class="dropdown-item" href="#option1">Option 1</a></li>
-                            <li><a class="dropdown-item" href="#option2">Option 2</a></li>
-                            <li><a class="dropdown-item" href="#option3">Option 3</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Add more dropdowns here -->
                 </div>
 
                 <!-- Search Form -->
