@@ -9,6 +9,24 @@ body {
     margin-top: auto;
 }
 
+.footer p {
+    margin: 0;
+}
+
+.footer a {
+    color: inherit;
+}
+
+.footer a:hover {
+    text-decoration: none;
+}
+
+.license-icon {
+    height: 20px;
+    margin-left: 3px;
+    vertical-align: text-bottom;
+}
+
 #portfolio .portfolio-item {
     max-width: 26rem;
     margin-left: auto;

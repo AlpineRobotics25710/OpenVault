@@ -1,11 +1,8 @@
 {% extends 'ftc/bases/base.html' %}
 
-
 {% block head %}
     <title>OpenVault - Home</title>
 {% endblock %}
-
-
 
 {% block body %}
     <!-- Header-->
@@ -17,4 +14,41 @@
             </div>
         </div>
     </header>
+
+    <!-- About Section -->
+    <section class="py-5 bg-light">
+        <div class="container px-4 px-lg-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bolder">About OpenVault</h2>
+                <p class="lead fw-normal text-muted">
+                    OpenVault is your go-to resource for open-source content tailored for FIRST Tech Challenge (FTC) teams.
+                    Whether you're a rookie team seeking guidance to get started or an experienced team looking for fresh inspiration,
+                    we provide a platform to explore and leverage open-source resources shared by the community.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Submission Info Section -->
+    <section class="py-5">
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 align-items-center">
+                <div class="col-lg-6">
+                    <h3 class="fw-bolder">Share Your Contributions</h3>
+                    <p class="lead text-muted">
+                        At OpenVault, we believe in collaboration and the power of shared knowledge. If you'd like to contribute
+                        your open-source content, please submit it through our easy-to-use submission form. Help empower the FTC
+                        community by sharing your resources and ideas!
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <a class="btn btn-primary btn-lg" href="">
+                            Submit Content
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}
