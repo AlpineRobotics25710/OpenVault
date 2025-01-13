@@ -1,6 +1,7 @@
 {% extends 'ftc/bases/base.html' %}
 
 {% block head %}
+    <script src="{{ url_for('static', filename='/javascript/portfolio-script.js') }}"></script>
     {% block intermediateHead %}
     {% endblock %}
 {% endblock %}
@@ -14,37 +15,51 @@
             <div class="d-flex align-items-center">
                 <!-- Dropdown Container -->
                 <div class="d-flex flex-wrap flex-grow-1">
-                    <form method="POST" action="/cad/active-intakes/{{ year_selected }}">
-                        <!-- Hidden input to store the selected year -->
-                        <input type="hidden" name="year_selected" id="year_selected" value="{{ year_selected }}">
+                    <form method="POST" action="/filter-cad" id="filterForm" class="d-flex">
+                        <!-- Hidden values -->
+                        <input type="hidden" name="selectedYear" id="selectedYear" value="">
+                        <input type="hidden" name="selectedTeamNumber" id="selectedTeamNumber" value="">
+                        <input type="hidden" name="selectedAwardWon" id="selectedAwardWon" value="">
 
+                        <!-- Year dropdown -->
                         <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="yearDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 Year Used
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2025'; this.closest('form').submit();">2025</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2024'; this.closest('form').submit();">2024</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2023'; this.closest('form').submit();">2023</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="document.getElementById('year_selected').value='2022'; this.closest('form').submit();">2022</a></li>
+                            <ul class="dropdown-menu" aria-labelledby="yearDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectYear('2025')">2025</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2024')">2024</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2023')">2023</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('2022')">2022</a></li>
+                                <li><a class="dropdown-item" onclick="selectYear('Any')">Any</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Team Number dropdown -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="compDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Team Number
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="compDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('2000')">Greater than 2000</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('1500')">1500-2000</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('1000')">1000-1500</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('500')">500-1000</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('<500')">Less than 500</a></li>
+                                <li><a class="dropdown-item" onclick="selectTeamNumber('Any')">Any</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Awards Won dropdown -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="awardsDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Awards Won
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="awardsDropdownButton">
+                                <li><a class="dropdown-item" onclick="selectAwardWon('inspire')">Inspire</a></li>
                             </ul>
                         </div>
                     </form>
-
-                    <!-- Dropdown 2 -->
-                    <div class="dropdown me-2">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            Category
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                            <li><a class="dropdown-item" href="#option1">Option 1</a></li>
-                            <li><a class="dropdown-item" href="#option2">Option 2</a></li>
-                            <li><a class="dropdown-item" href="#option3">Option 3</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Add more dropdowns here -->
                 </div>
 
                 <!-- Search Form -->
@@ -74,8 +89,8 @@
                                         <!-- Name-->
                                         <h5 class="fw-bolder">{{ record[1] }}</h5>
                                         <!-- Author-->
-                                        <p>By: {{ record[2] }}</p>
-                                        <p><strong>Team Number:</strong> {{ record[6] }}</p>
+                                        <p>By: {{ record[8] }}</p>
+                                        <p><strong>Team Number:</strong> {{ record[5] }}</p>
                                     </div>
                                 </div>
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
@@ -105,11 +120,11 @@
                                                         <div class="col-sm-6">
                                                             <!-- Name-->
                                                             <h2 class="fw-bolder">{{ record[1] }}</h2>
-                                                            <!-- Author-->
-                                                            <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record[2] }}</strong></h5>
-                                                            <p><strong>Used in Competition:</strong> {{ "Yes" if record[5] else "No" }}</p>
+                                                            <!-- Author -->
+                                                            <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record[8] }}</strong></h5>
                                                             <p><strong>Years used:</strong> {{ record[7] }}</p>
-                                                            <p><strong>Team Number:</strong> {{ record[6] }}</p>
+                                                            <p><strong>Team Number:</strong> {{ record[5] }}</p>
+                                                            <p><strong>Awards won:</strong> {{ record[6] }}</p>
                                                             <!-- Product description-->
                                                             <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;"><strong>Description: </strong>{{ record[4] }}</p>
                                                         </div>
@@ -118,8 +133,12 @@
                                                             <img src="{{ record[3] }}" class="img-fluid d-block mx-auto" alt="preview-image">
                                                         </div>
                                                         <div class="text-center" style="padding: 1rem; height: 6rem;">
-                                                            <a href="{{ record[8] }}">
-                                                                <img class="btn btn-outline-dark mt-auto" style="margin: 0" src="{{ url_for('static', filename='/images/onshape-logo.png') }}" alt="Onshape Logo" />
+                                                            <a type="button" class="btn btn-outline-dark" download="{{ record[2] }}">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"></path>
+                                                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"></path>
+                                                                </svg>
+                                                                Download
                                                             </a>
                                                             <p style="margin: 0; margin-top: 0.25rem;">View Here</p>
                                                         </div>
