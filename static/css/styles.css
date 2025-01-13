@@ -1,3 +1,14 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.footer {
+    margin-top: auto;
+}
+
 #portfolio .portfolio-item {
     max-width: 26rem;
     margin-left: auto;
@@ -87,4 +98,3 @@
 .portfolio-modal .close-modal:hover {
     opacity: 0.3;
 }
-
