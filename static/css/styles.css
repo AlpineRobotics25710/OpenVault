@@ -5,6 +5,10 @@ body {
     justify-content: flex-start;
 }
 
+header {
+     background-color: #166030;
+}
+
 .footer {
     margin-top: auto;
 }
