@@ -29,6 +29,8 @@ def fetch_data_from_db(section, table_name):
 
 @app.route('/filter-code', methods=['POST', 'GET'])
 def filter_code():
+    if not records:
+        return render_template(curr_template, record=records)
     year = request.form.get('selectedYear') if request.form.get('selectedYear') != "Any" else None
     used_in_comp = True if request.form.get('usedInComp') == "yes" else False if request.form.get(
         'usedInComp') == "no" else None
@@ -75,6 +77,8 @@ def get_filtered_code_records(years_used=None, used_in_comp=None, team_number=No
 
 @app.route('/filter-cad', methods=['POST', 'GET'])
 def filter_cad():
+    if not records:
+        return render_template(curr_template, records=records)
     year = request.form.get('selectedYear') if request.form.get('selectedYear') != "Any" else None
     used_in_comp = True if request.form.get('usedInComp') == "yes" else False if request.form.get(
         'usedInComp') == "no" else None
