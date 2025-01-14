@@ -15,7 +15,7 @@
             <div class="d-flex align-items-center">
                 <!-- Dropdown Container -->
                 <div class="d-flex flex-wrap flex-grow-1">
-                    <form method="POST" action="/filter-cad" id="filterForm" class="d-flex">
+                    <form method="POST" action="/filter-portfolios" id="filterForm" class="d-flex">
                         <!-- Hidden values -->
                         <input type="hidden" name="selectedYear" id="selectedYear" value="">
                         <input type="hidden" name="selectedTeamNumber" id="selectedTeamNumber" value="">
@@ -57,6 +57,13 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="awardsDropdownButton">
                                 <li><a class="dropdown-item" onclick="selectAwardWon('inspire')">Inspire</a></li>
+                                <li><a class="dropdown-item" onclick="selectAwardWon('think')">Think</a></li>
+                                <li><a class="dropdown-item" onclick="selectAwardWon('connect')">Connect</a></li>
+                                <li><a class="dropdown-item" onclick="selectAwardWon('motivate')">Motivate</a></li>
+                                <li><a class="dropdown-item" onclick="selectAwardWon('design')">Design</a></li>
+                                <li><a class="dropdown-item" onclick="selectAwardWon('innovate')">Innovate</a></li>
+                                <li><a class="dropdown-item" onclick="selectAwardWon('control')">Control</a></li>
+                                <li><a class="dropdown-item" onclick="selectAwardWon('Any')">Any</a></li>
                             </ul>
                         </div>
                     </form>

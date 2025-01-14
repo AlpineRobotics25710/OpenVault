@@ -40,10 +40,8 @@ def filter_code():
     return render_template(curr_template, records=filtered_records)
 
 
-def get_filtered_code_records(years_used=None, used_in_comp=None, team_number=None, language=None,):
+def get_filtered_code_records(years_used=None, used_in_comp=None, team_number=None, language=None, ):
     new_records = []
-    print(team_number)
-    print(records[0][5])
     for record in records:
         append = True
         if years_used and years_used.lower() not in record[8].lower():
@@ -89,7 +87,6 @@ def filter_cad():
 
 def get_filtered_cad_records(years_used=None, used_in_comp=None, team_number=None):
     new_records = []
-    print(team_number)
     for record in records:
         append = True
         if years_used and years_used.lower() not in record[7].lower():
@@ -112,6 +109,48 @@ def get_filtered_cad_records(years_used=None, used_in_comp=None, team_number=Non
                         append = False
                 case "2000":
                     if record[6] < 2000:
+                        append = False
+        if append:
+            new_records.append(record)
+
+    return new_records
+
+
+@app.route('/filter-portfolios', methods=['POST', 'GET'])
+def filter_portfolios():
+    if not records:
+        return render_template(curr_template, records=records)
+    year = request.form.get('selectedYear') if request.form.get('selectedYear') != "Any" else None
+    team_number = request.form.get('selectedTeamNumber') if request.form.get('selectedTeamNumber') != "Any" else None
+    awards_won = request.form.get('selectedAwardWon') if request.form.get('selectedAwardWon') != "Any" else None
+    filtered_records = get_filtered_portfolios_records(year, awards_won, team_number)
+    return render_template(curr_template, records=filtered_records)
+
+
+def get_filtered_portfolios_records(years_used=None, awards_won=None, team_number=None):
+    new_records = []
+    for record in records:
+        append = True
+        if years_used and years_used.lower() not in record[7].lower():
+            append = False
+        if awards_won and awards_won.lower() not in record[6].lower():
+            append = False
+        if team_number:
+            match team_number:
+                case "<500":
+                    if record[5] >= 500:
+                        append = False
+                case "500":
+                    if record[5] < 500 or record[5] >= 1000:
+                        append = False
+                case "1000":
+                    if record[5] < 1000 or record[5] >= 1500:
+                        append = False
+                case "1500":
+                    if record[5] < 1500 or record[5] >= 2000:
+                        append = False
+                case "2000":
+                    if record[5] < 2000:
                         append = False
         if append:
             new_records.append(record)
