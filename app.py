@@ -1,5 +1,7 @@
-import sqlite3
+import requests
 from flask import Flask, render_template, request
+from bs4 import BeautifulSoup
+import uuid
 
 app = Flask(__name__)
 
@@ -15,15 +17,112 @@ def inject_active_route():
 
 
 # Function to fetch data from the database
-def fetch_data_from_db(section, table_name):
-    # Connect to the database
-    connection = sqlite3.connect(f"static/databases/{section}.db")
-    cursor = connection.cursor()
+def fetch_cad_data_from_github(section, sub_section):
+    global records
+    github_page = requests.get(f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
+    records = []
+    if github_page.status_code == 200:
+        soup = BeautifulSoup(github_page.content, "html.parser")
+        unique_titles = set()
+        links = []
 
-    # Fetch all rows from the active_intakes table
-    cursor.execute(f"SELECT * FROM {table_name}")
-    records = cursor.fetchall()
-    connection.close()
+        for subfolder in soup.find_all("a", class_="Link--primary"):
+            title = subfolder.get("title")
+            if title not in unique_titles:
+                unique_titles.add(title)
+                links.append(subfolder)
+
+        #print(links)
+
+        for subfolder in links:
+            post_info = requests.get(f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/info.json")
+            if post_info.status_code == 200:
+                post_info_json = post_info.json()
+                records.append(
+                    {
+                        "uuid": uuid.uuid4(),
+                        "preview_image_url": f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['preview-image-name']}",
+                        "title": post_info_json["title"],
+                        "author": post_info_json["author"],
+                        "description": post_info_json["description"],
+                        "used_in_comp": post_info_json["used-in-comp"],
+                        "team_number": post_info_json["team-number"],
+                        "years_used": post_info_json["years-used"],
+                        "onshape_link": post_info_json["onshape-link"]
+                    }
+                )
+    print(records)
+    return records
+
+# Function to fetch data from the database
+def fetch_code_data_from_github(section, sub_section):
+    global records
+    github_page = requests.get(f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
+    records = []
+    if github_page.status_code == 200:
+        soup = BeautifulSoup(github_page.content, "html.parser")
+        unique_titles = set()
+        links = []
+
+        for subfolder in soup.find_all("a", class_="Link--primary"):
+            title = subfolder.get("title")
+            if title not in unique_titles:
+                unique_titles.add(title)
+                links.append(subfolder)
+
+        #print(links)
+
+        for subfolder in links:
+            post_info = requests.get(f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/info.json")
+            if post_info.status_code == 200:
+                post_info_json = post_info.json()
+                records.append(
+                    [
+                        post_info_json["title"],
+                        post_info_json["author"],
+                        post_info_json["description"],
+                        post_info_json["used-in-comp"],
+                        post_info_json["team-number"],
+                        post_info_json["onshape-link"]
+                    ]
+                )
+
+    return records
+
+
+# Function to fetch data from the database
+def fetch_portfolios_data_from_github(section, sub_section):
+    global records
+    github_page = requests.get(f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
+    records = []
+    if github_page.status_code == 200:
+        soup = BeautifulSoup(github_page.content, "html.parser")
+        unique_titles = set()
+        links = []
+
+        for subfolder in soup.find_all("a", class_="Link--primary"):
+            title = subfolder.get("title")
+            if title not in unique_titles:
+                unique_titles.add(title)
+                links.append(subfolder)
+
+        #print(links)
+
+        for subfolder in links:
+            post_info = requests.get(f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/info.json")
+            if post_info.status_code == 200:
+                post_info_json = post_info.json()
+                records.append(
+                    [
+                        post_info_json["title"],
+                        post_info_json["author"],
+                        post_info_json["description"],
+                        post_info_json["used-in-comp"],
+                        post_info_json["team-number"],
+                        post_info_json["onshape-link"]
+                    ]
+                )
+
     return records
 
 
@@ -168,7 +267,7 @@ def index():
 @app.route('/cad/active-intakes')
 def cad_active_intakes_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "active_intakes")
+    records = fetch_cad_data_from_github("cad", "active_intakes")
     curr_template = "ftc/cad/active-intakes.html"
     return render_template("ftc/cad/active-intakes.html", records=records)
 
@@ -176,7 +275,7 @@ def cad_active_intakes_page():
 @app.route('/cad/arms')
 def cad_arms_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "arms")
+    records = fetch_cad_data_from_github("cad", "arms")
     curr_template = "ftc/cad/arms.html"
     return render_template("ftc/cad/arms.html", records=records)
 
@@ -184,7 +283,7 @@ def cad_arms_page():
 @app.route('/cad/dead-wheels')
 def cad_dead_wheels_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "dead_wheels")
+    records = fetch_cad_data_from_github("cad", "dead_wheels")
     curr_template = "ftc/cad/dead-wheels.html"
     return render_template("ftc/cad/dead-wheels.html", records=records)
 
@@ -192,7 +291,7 @@ def cad_dead_wheels_page():
 @app.route('/cad/drivetrains/')
 def cad_drivetrains_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "drivetrains")
+    records = fetch_cad_data_from_github("cad", "drivetrains")
     curr_template = "ftc/cad/drivetrains.html"
     return render_template("ftc/cad/drivetrains.html", records=records)
 
@@ -200,7 +299,7 @@ def cad_drivetrains_page():
 @app.route('/cad/linear-motion-guides')
 def cad_linear_motions_guides_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "linear_motion_guides")
+    records = fetch_cad_data_from_github("cad", "linear_motion_guides")
     curr_template = "ftc/cad/linear-motions-guides.html"
     return render_template("ftc/cad/linear-motions-guides.html", records=records)
 
@@ -208,7 +307,7 @@ def cad_linear_motions_guides_page():
 @app.route('/cad/linkages')
 def cad_linkages_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "linkages")
+    records = fetch_cad_data_from_github("cad", "linkages")
     curr_template = "ftc/cad/linkages.html"
     return render_template("ftc/cad/linkages.html", records=records)
 
@@ -216,7 +315,7 @@ def cad_linkages_page():
 @app.route('/cad/outtakes')
 def cad_outtakes_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "outtakes")
+    records = fetch_cad_data_from_github("cad", "outtakes")
     curr_template = "ftc/cad/outtakes.html"
     return render_template("ftc/cad/outtakes.html", records=records)
 
@@ -224,7 +323,7 @@ def cad_outtakes_page():
 @app.route('/cad/passive-intakes')
 def cad_passive_intakes_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "passive_intakes")
+    records = fetch_cad_data_from_github("cad", "passive_intakes")
     curr_template = "ftc/cad/passive-intakes.html"
     return render_template("ftc/cad/passive-intakes.html", records=records)
 
@@ -232,7 +331,7 @@ def cad_passive_intakes_page():
 @app.route('/cad/power-transmissions')
 def cad_power_transmissions_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "power_transmissions")
+    records = fetch_cad_data_from_github("cad", "power_transmissions")
     curr_template = "ftc/cad/power-transmissions.html"
     return render_template("ftc/cad/power-transmissions.html", records=records)
 
@@ -240,7 +339,7 @@ def cad_power_transmissions_page():
 @app.route('/cad/transfers')
 def cad_transfers_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "transfers")
+    records = fetch_cad_data_from_github("cad", "transfers")
     curr_template = "ftc/cad/transfers.html"
     return render_template("ftc/cad/transfers.html", records=records)
 
@@ -248,7 +347,7 @@ def cad_transfers_page():
 @app.route('/cad/turrets')
 def cad_turrets_page():
     global records, curr_template
-    records = fetch_data_from_db("cad", "turrets")
+    records = fetch_cad_data_from_github("cad", "turrets")
     curr_template = "ftc/cad/turrets.html"
     return render_template("ftc/cad/turrets.html", records=records)
 
@@ -258,7 +357,7 @@ def cad_turrets_page():
 @app.route('/code/driver-enhancements')
 def code_driver_enhancements_page():
     global records, curr_template
-    records = fetch_data_from_db("code", "driver_enhancements")
+    records = fetch_code_data_from_github("code", "driver_enhancements")
     curr_template = "ftc/code/driver-enhancements.html"
     return render_template("ftc/code/driver-enhancements.html", records=records)
 
@@ -266,7 +365,7 @@ def code_driver_enhancements_page():
 @app.route('/code/ftclib')
 def code_ftclib_page():
     global records, curr_template
-    records = fetch_data_from_db("code", "ftc_lib")
+    records = fetch_code_data_from_github("code", "ftc_lib")
     curr_template = "ftc/code/ftc-lib.html"
     return render_template("ftc/code/ftc-lib.html", records=records)
 
@@ -274,7 +373,7 @@ def code_ftclib_page():
 @app.route('/code/gamepad')
 def code_auton_page():
     global records, curr_template
-    records = fetch_data_from_db("code", "gamepad")
+    records = fetch_code_data_from_github("code", "gamepad")
     curr_template = "ftc/code/gamepad.html"
     return render_template("ftc/code/gamepad.html", records=records)
 
@@ -282,7 +381,7 @@ def code_auton_page():
 @app.route('/code/pedro-pathing')
 def code_pedro_pathing_page():
     global records, curr_template
-    records = fetch_data_from_db("code", "pedro_pathing")
+    records = fetch_code_data_from_github("code", "pedro_pathing")
     curr_template = "ftc/code/pedro-pathing.html"
     return render_template("ftc/code/pedro-pathing.html", records=records)
 
@@ -290,7 +389,7 @@ def code_pedro_pathing_page():
 @app.route('/code/road-runner')
 def code_road_runner_page():
     global records, curr_template
-    records = fetch_data_from_db("code", "road_runner")
+    records = fetch_code_data_from_github("code", "road_runner")
     curr_template = "ftc/code/road-runner.html"
     return render_template("ftc/code/road-runner.html", records=records)
 
@@ -298,7 +397,7 @@ def code_road_runner_page():
 @app.route('/portfolios')
 def portfolios():
     global records, curr_template
-    records = fetch_data_from_db("portfolios", "portfolios")
+    records = fetch_portfolios_data_from_github("portfolios", "portfolios")
     curr_template = "ftc/portfolios/portfolios.html"
     return render_template("ftc/portfolios/portfolios.html", records=records)
 
