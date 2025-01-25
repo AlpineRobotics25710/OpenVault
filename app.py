@@ -40,7 +40,7 @@ def fetch_cad_data_from_github(section, sub_section):
                 post_info_json = post_info.json()
                 records.append(
                     {
-                        "uuid": uuid.uuid4(),
+                        "uuid": uuid.uuid4().__str__(),
                         "preview_image_url": f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['preview-image-name']}",
                         "title": post_info_json["title"],
                         "author": post_info_json["author"],
@@ -77,14 +77,18 @@ def fetch_code_data_from_github(section, sub_section):
             if post_info.status_code == 200:
                 post_info_json = post_info.json()
                 records.append(
-                    [
-                        post_info_json["title"],
-                        post_info_json["author"],
-                        post_info_json["description"],
-                        post_info_json["used-in-comp"],
-                        post_info_json["team-number"],
-                        post_info_json["onshape-link"]
-                    ]
+                    {
+                        "uuid": uuid.uuid4().__str__(),
+                        "preview_image_url": f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['preview-image-name']}",
+                        "download_url": f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['download-name']}",
+                        "title": post_info_json["title"],
+                        "author": post_info_json["author"],
+                        "description": post_info_json["description"],
+                        "used_in_comp": post_info_json["used-in-comp"],
+                        "team_number": post_info_json["team-number"],
+                        "years_used": post_info_json["years-used"],
+                        "language": post_info_json["language"]
+                    }
                 )
 
     return records
@@ -113,14 +117,17 @@ def fetch_portfolios_data_from_github(section, sub_section):
             if post_info.status_code == 200:
                 post_info_json = post_info.json()
                 records.append(
-                    [
-                        post_info_json["title"],
-                        post_info_json["author"],
-                        post_info_json["description"],
-                        post_info_json["used-in-comp"],
-                        post_info_json["team-number"],
-                        post_info_json["onshape-link"]
-                    ]
+                    {
+                        "uuid": uuid.uuid4().__str__(),
+                        "preview_image_url": f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['preview-image-name']}",
+                        "download_url": f"https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['file-name']}",
+                        "title": post_info_json["title"],
+                        "author": post_info_json["author"],
+                        "description": post_info_json["description"],
+                        "team_number": post_info_json["team-number"],
+                        "years_used": post_info_json["years-used"],
+                        "awards_won": post_info_json["awards-won"]
+                    }
                 )
 
     return records
@@ -143,28 +150,29 @@ def get_filtered_code_records(years_used=None, used_in_comp=None, team_number=No
     new_records = []
     for record in records:
         append = True
-        if years_used and years_used.lower() not in record[8].lower():
+        if years_used and years_used.lower() not in record["years_used"].lower():
             append = False
-        if language and language.lower() not in record[6].lower():
+        if language and language.lower() not in record["language"].lower():
             append = False
-        if used_in_comp is not None and used_in_comp != record[7]:
+        if used_in_comp is not None and used_in_comp != bool(record["used_in_comp"]):
             append = False
         if team_number:
+            record_team_number = int(record["team_number"])
             match team_number:
                 case "<500":
-                    if record[5] >= 500:
+                    if record_team_number >= 500:
                         append = False
                 case "500":
-                    if record[5] < 500 or record[5] >= 1000:
+                    if record_team_number < 500 or record_team_number >= 1000:
                         append = False
                 case "1000":
-                    if record[5] < 1000 or record[5] >= 1500:
+                    if record_team_number < 1000 or record_team_number >= 1500:
                         append = False
                 case "1500":
-                    if record[5] < 1500 or record[5] >= 2000:
+                    if record_team_number < 1500 or record_team_number >= 2000:
                         append = False
                 case "2000":
-                    if record[5] < 2000:
+                    if record_team_number < 2000:
                         append = False
         if append:
             new_records.append(record)
@@ -192,7 +200,7 @@ def get_filtered_cad_records(years_used=None, used_in_comp=None, team_number=Non
         append = True
         if years_used and years_used.lower() not in record["years_used"].lower():
             append = False
-        if used_in_comp is not None and used_in_comp != record["used_in_comp"]:
+        if used_in_comp is not None and used_in_comp != bool(record["used_in_comp"]):
             append = False
         if team_number:
             record_team_number = int(record["team_number"])
@@ -233,26 +241,27 @@ def get_filtered_portfolios_records(years_used=None, awards_won=None, team_numbe
     new_records = []
     for record in records:
         append = True
-        if years_used and years_used.lower() not in record[7].lower():
+        if years_used and years_used.lower() not in record["years_used"].lower():
             append = False
-        if awards_won and awards_won.lower() not in record[6].lower():
+        if awards_won and awards_won.lower() not in record["awards_won"].lower():
             append = False
         if team_number:
+            record_team_number = int(record["team_number"])
             match team_number:
                 case "<500":
-                    if record[5] >= 500:
+                    if record_team_number >= 500:
                         append = False
                 case "500":
-                    if record[5] < 500 or record[5] >= 1000:
+                    if record_team_number < 500 or record_team_number >= 1000:
                         append = False
                 case "1000":
-                    if record[5] < 1000 or record[5] >= 1500:
+                    if record_team_number < 1000 or record_team_number >= 1500:
                         append = False
                 case "1500":
-                    if record[5] < 1500 or record[5] >= 2000:
+                    if record_team_number < 1500 or record_team_number >= 2000:
                         append = False
                 case "2000":
-                    if record[5] < 2000:
+                    if record_team_number < 2000:
                         append = False
         if append:
             new_records.append(record)
@@ -286,7 +295,7 @@ def cad_arms_page():
 @app.route('/cad/dead-wheels')
 def cad_dead_wheels_page():
     global records, curr_template
-    records = fetch_cad_data_from_github("cad", "dead_wheels")
+    records = fetch_cad_data_from_github("cad", "dead-wheels")
     curr_template = "ftc/cad/dead-wheels.html"
     return render_template("ftc/cad/dead-wheels.html", records=records)
 
@@ -302,7 +311,7 @@ def cad_drivetrains_page():
 @app.route('/cad/linear-motion-guides')
 def cad_linear_motions_guides_page():
     global records, curr_template
-    records = fetch_cad_data_from_github("cad", "linear_motion_guides")
+    records = fetch_cad_data_from_github("cad", "linear-motion-guides")
     curr_template = "ftc/cad/linear-motions-guides.html"
     return render_template("ftc/cad/linear-motions-guides.html", records=records)
 
@@ -326,7 +335,7 @@ def cad_outtakes_page():
 @app.route('/cad/passive-intakes')
 def cad_passive_intakes_page():
     global records, curr_template
-    records = fetch_cad_data_from_github("cad", "passive_intakes")
+    records = fetch_cad_data_from_github("cad", "passive-intakes")
     curr_template = "ftc/cad/passive-intakes.html"
     return render_template("ftc/cad/passive-intakes.html", records=records)
 
@@ -334,7 +343,7 @@ def cad_passive_intakes_page():
 @app.route('/cad/power-transmissions')
 def cad_power_transmissions_page():
     global records, curr_template
-    records = fetch_cad_data_from_github("cad", "power_transmissions")
+    records = fetch_cad_data_from_github("cad", "power-transmissions")
     curr_template = "ftc/cad/power-transmissions.html"
     return render_template("ftc/cad/power-transmissions.html", records=records)
 
@@ -360,7 +369,7 @@ def cad_turrets_page():
 @app.route('/code/driver-enhancements')
 def code_driver_enhancements_page():
     global records, curr_template
-    records = fetch_code_data_from_github("code", "driver_enhancements")
+    records = fetch_code_data_from_github("code", "driver-enhancements")
     curr_template = "ftc/code/driver-enhancements.html"
     return render_template("ftc/code/driver-enhancements.html", records=records)
 
@@ -368,7 +377,7 @@ def code_driver_enhancements_page():
 @app.route('/code/ftclib')
 def code_ftclib_page():
     global records, curr_template
-    records = fetch_code_data_from_github("code", "ftc_lib")
+    records = fetch_code_data_from_github("code", "ftc-lib")
     curr_template = "ftc/code/ftc-lib.html"
     return render_template("ftc/code/ftc-lib.html", records=records)
 
@@ -384,7 +393,7 @@ def code_auton_page():
 @app.route('/code/pedro-pathing')
 def code_pedro_pathing_page():
     global records, curr_template
-    records = fetch_code_data_from_github("code", "pedro_pathing")
+    records = fetch_code_data_from_github("code", "pedro-pathing")
     curr_template = "ftc/code/pedro-pathing.html"
     return render_template("ftc/code/pedro-pathing.html", records=records)
 
@@ -392,7 +401,7 @@ def code_pedro_pathing_page():
 @app.route('/code/road-runner')
 def code_road_runner_page():
     global records, curr_template
-    records = fetch_code_data_from_github("code", "road_runner")
+    records = fetch_code_data_from_github("code", "road-runner")
     curr_template = "ftc/code/road-runner.html"
     return render_template("ftc/code/road-runner.html", records=records)
 

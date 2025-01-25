@@ -97,20 +97,20 @@
                         <div class="col mb-5">
                             <div class="card h-100">
                                 <!-- Preview image-->
-                                <img class="card-img-top" src="{{ record[3] }}" alt="Preview"/>
+                                <img class="card-img-top" src="{{ record.preview_image_url }}" alt="Preview"/>
                                 <!-- Details-->
                                 <div class="card-body p-4">
                                     <div class="text-center">
                                         <!-- Name-->
-                                        <h5 class="fw-bolder">{{ record[1] }}</h5>
+                                        <h5 class="fw-bolder">{{ record.title }}</h5>
                                         <!-- Author-->
-                                        <p>By: {{ record[9] }}</p>
-                                        <p><strong>Team Number:</strong> {{ record[5] }}</p>
+                                        <p>By: {{ record.author }}</p>
+                                        <p><strong>Team Number:</strong> {{ record.team_number }}</p>
                                     </div>
                                 </div>
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                     <div class="text-center">
-                                        <a class="btn btn-outline-dark mt-auto" href="#" data-bs-toggle="modal" data-bs-target="#popover{{ record[0] }}">
+                                        <a class="btn btn-outline-dark mt-auto" href="#" data-bs-toggle="modal" data-bs-target="#popover{{ record.uuid }}">
                                             See Details
                                         </a>
                                     </div>
@@ -119,7 +119,7 @@
                         </div>
 
                         <!-- Popover -->
-                        <div class="portfolio-modal modal fade" id="popover{{ record[0] }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="portfolio-modal modal fade" id="popover{{ record.uuid }}" tabindex="-1" role="dialog" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="close-modal" data-bs-dismiss="modal">
@@ -134,22 +134,22 @@
                                                         <!-- Text Content -->
                                                         <div class="col-sm-6">
                                                             <!-- Name-->
-                                                            <h2 class="fw-bolder">{{ record[1] }}</h2>
+                                                            <h2 class="fw-bolder">{{ record.title }}</h2>
                                                             <!-- Author-->
-                                                            <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record[9] }}</strong></h5>
-                                                            <p><strong>Team Number:</strong> {{ record[5] }}</p>
-                                                            <p><strong>Used in Competition:</strong> {{ "Yes" if record[7] else "No" }}</p>
-                                                            <p><strong>Years used:</strong> {{ record[8] }}</p>
-                                                            <p><strong>Language:</strong> {{ record[6] }}</p>
+                                                            <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record.author }}</strong></h5>
+                                                            <p><strong>Team Number:</strong> {{ record.team_number }}</p>
+                                                            <p><strong>Used in Competition:</strong> {{ "Yes" if record.used_in_comp == "true" else "No" }}</p>
+                                                            <p><strong>Years used:</strong> {{ record.years_used }}</p>
+                                                            <p><strong>Language:</strong> {{ record.language }}</p>
                                                             <!-- Product description-->
-                                                            <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;"><strong>Description: </strong>{{ record[4] }}</p>
+                                                            <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;"><strong>Description: </strong>{{ record.description }}</p>
                                                         </div>
                                                         <!-- Preview Image -->
                                                         <div class="col-sm-6 text-center">
-                                                            <img src="{{ record[3] }}" class="img-fluid d-block mx-auto" alt="preview-image">
+                                                            <img src="{{ record.preview_image_url }}" class="img-fluid d-block mx-auto" alt="preview-image">
                                                         </div>
                                                         <div class="text-center" style="padding: 1rem; height: 6rem;">
-                                                            <a type="button" class="btn btn-outline-dark" download="{{ record[2] }}">
+                                                            <a type="button" class="btn btn-outline-dark" href="{{ record.download_url }}" download="{{ record.title }}">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                                                                     <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"></path>
                                                                     <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"></path>
