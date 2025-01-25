@@ -51,7 +51,7 @@ def fetch_cad_data_from_github(section, sub_section):
                         "onshape_link": post_info_json["onshape-link"]
                     }
                 )
-    print(records)
+
     return records
 
 # Function to fetch data from the database
@@ -174,6 +174,7 @@ def get_filtered_code_records(years_used=None, used_in_comp=None, team_number=No
 
 @app.route('/filter-cad', methods=['POST', 'GET'])
 def filter_cad():
+    print(records)
     if not records:
         return render_template(curr_template, records=records)
     year = request.form.get('selectedYear') if request.form.get('selectedYear') != "Any" else None
@@ -185,29 +186,31 @@ def filter_cad():
 
 
 def get_filtered_cad_records(years_used=None, used_in_comp=None, team_number=None):
+    global records
     new_records = []
     for record in records:
         append = True
-        if years_used and years_used.lower() not in record[7].lower():
+        if years_used and years_used.lower() not in record["years_used"].lower():
             append = False
-        if used_in_comp is not None and used_in_comp != record[5]:
+        if used_in_comp is not None and used_in_comp != record["used_in_comp"]:
             append = False
         if team_number:
+            record_team_number = int(record["team_number"])
             match team_number:
                 case "<500":
-                    if record[6] >= 500:
+                    if record_team_number >= 500:
                         append = False
                 case "500":
-                    if record[6] < 500 or record[6] >= 1000:
+                    if record_team_number < 500 or record_team_number >= 1000:
                         append = False
                 case "1000":
-                    if record[6] < 1000 or record[6] >= 1500:
+                    if record_team_number< 1000 or record_team_number >= 1500:
                         append = False
                 case "1500":
-                    if record[6] < 1500 or record[6] >= 2000:
+                    if record_team_number < 1500 or record_team_number >= 2000:
                         append = False
                 case "2000":
-                    if record[6] < 2000:
+                    if record_team_number < 2000:
                         append = False
         if append:
             new_records.append(record)
