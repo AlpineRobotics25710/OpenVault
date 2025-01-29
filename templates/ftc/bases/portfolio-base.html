@@ -1,7 +1,7 @@
 {% extends 'ftc/bases/base.html' %}
 
 {% block head %}
-    <script src="{{ url_for('static', filename='/javascript/portfolio-script.js') }}"></script>
+    <script src="{{ url_for('static', filename='/javascript/script.js') }}"></script>
     {% block intermediateHead %}
     {% endblock %}
 {% endblock %}
@@ -13,70 +13,11 @@
     <div class="bg-light py-2 border rounded" style="margin: 10px;">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <!-- Dropdown Container -->
-                <div class="d-flex flex-wrap flex-grow-1">
-                    <form method="POST" action="/filter-portfolios" id="filterForm" class="d-flex">
-                        <!-- Hidden values -->
-                        <input type="hidden" name="selectedYear" id="selectedYear" value="">
-                        <input type="hidden" name="selectedTeamNumber" id="selectedTeamNumber" value="">
-                        <input type="hidden" name="selectedAwardWon" id="selectedAwardWon" value="">
-
-                        <!-- Year dropdown -->
-                        <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="yearDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                Year Used
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="yearDropdownButton">
-                                <li><a class="dropdown-item" onclick="selectYear('2025')">2025</a></li>
-                                <li><a class="dropdown-item" onclick="selectYear('2024')">2024</a></li>
-                                <li><a class="dropdown-item" onclick="selectYear('2023')">2023</a></li>
-                                <li><a class="dropdown-item" onclick="selectYear('2022')">2022</a></li>
-                                <li><a class="dropdown-item" onclick="selectYear('Any')">Any</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Team Number dropdown -->
-                        <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="compDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                Team Number
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="compDropdownButton">
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('2000')">Greater than 2000</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('1500')">1500-2000</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('1000')">1000-1500</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('500')">500-1000</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('<500')">Less than 500</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('Any')">Any</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Awards Won dropdown -->
-                        <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="awardsDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                Awards Won
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="awardsDropdownButton">
-                                <li><a class="dropdown-item" onclick="selectAwardWon('inspire')">Inspire</a></li>
-                                <li><a class="dropdown-item" onclick="selectAwardWon('think')">Think</a></li>
-                                <li><a class="dropdown-item" onclick="selectAwardWon('connect')">Connect</a></li>
-                                <li><a class="dropdown-item" onclick="selectAwardWon('motivate')">Motivate</a></li>
-                                <li><a class="dropdown-item" onclick="selectAwardWon('design')">Design</a></li>
-                                <li><a class="dropdown-item" onclick="selectAwardWon('innovate')">Innovate</a></li>
-                                <li><a class="dropdown-item" onclick="selectAwardWon('control')">Control</a></li>
-                                <li><a class="dropdown-item" onclick="selectAwardWon('Any')">Any</a></li>
-                            </ul>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Search Form
-                <div class="ms-auto">
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search here..." aria-label="Search">
-                        <button class="btn btn-primary" type="submit">Search</button>
-                    </form>
-                </div>
-                -->
+                <form class="d-flex w-100" role="search" action="/search" method="POST" id="searchForm">
+                    <input class="form-control me-2 flex-grow-1" type="search" name="searchBox" id="searchBox" placeholder="Search here..." aria-label="Search">
+                    <button class="btn btn-primary me-2" type="submit">Search</button>
+                    <button class="btn btn-secondary " type="button" id="clearSearchButton" onclick="clearSearch()">Clear</button>
+                </form>
             </div>
         </div>
     </div>

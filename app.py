@@ -133,141 +133,26 @@ def fetch_portfolios_data_from_github(section, sub_section):
     return records
 
 
-@app.route('/filter-code', methods=['POST', 'GET'])
-def filter_code():
-    if not records:
-        return render_template(curr_template, record=records)
-    year = request.form.get('selectedYear') if request.form.get('selectedYear') != "Any" else None
-    used_in_comp = True if request.form.get('usedInComp') == "yes" else False if request.form.get(
-        'usedInComp') == "no" else None
-    team_number = request.form.get('selectedTeamNumber') if request.form.get('selectedTeamNumber') != "Any" else None
-    language = request.form.get('selectedLanguage') if request.form.get('selectedLanguage') != "Any" else None
-    filtered_records = get_filtered_code_records(year, used_in_comp, team_number, language)
-    return render_template(curr_template, records=filtered_records)
+@app.route('/search', methods=["GET", "POST"])
+def search():
+    global records, curr_template
+    if request.method == "POST":
+        search_query = request.form.get("searchBox")
+        if search_query == "":
+            return render_template(curr_template, records=records)
+        if search_query:
+            search_query = search_query.lower()
+            filtered_records = [
+                record for record in records if
+                search_query in record["title"].lower() or
+                search_query in record["author"].lower() or
+                search_query in record["description"].lower() or
+                search_query in record["team_number"].lower() or
+                search_query in record["years_used"].lower()
+            ]
+            return render_template(curr_template, records=filtered_records)
 
-
-def get_filtered_code_records(years_used=None, used_in_comp=None, team_number=None, language=None, ):
-    new_records = []
-    for record in records:
-        append = True
-        if years_used and years_used.lower() not in record["years_used"].lower():
-            append = False
-        if language and language.lower() not in record["language"].lower():
-            append = False
-        if used_in_comp is not None and used_in_comp != bool(record["used_in_comp"]):
-            append = False
-        if team_number:
-            record_team_number = int(record["team_number"])
-            match team_number:
-                case "<500":
-                    if record_team_number >= 500:
-                        append = False
-                case "500":
-                    if record_team_number < 500 or record_team_number >= 1000:
-                        append = False
-                case "1000":
-                    if record_team_number < 1000 or record_team_number >= 1500:
-                        append = False
-                case "1500":
-                    if record_team_number < 1500 or record_team_number >= 2000:
-                        append = False
-                case "2000":
-                    if record_team_number < 2000:
-                        append = False
-        if append:
-            new_records.append(record)
-
-    return new_records
-
-
-@app.route('/filter-cad', methods=['POST', 'GET'])
-def filter_cad():
-    print(records)
-    if not records:
-        return render_template(curr_template, records=records)
-    year = request.form.get('selectedYear') if request.form.get('selectedYear') != "Any" else None
-    used_in_comp = True if request.form.get('usedInComp') == "yes" else False if request.form.get(
-        'usedInComp') == "no" else None
-    team_number = request.form.get('selectedTeamNumber') if request.form.get('selectedTeamNumber') != "Any" else None
-    filtered_records = get_filtered_cad_records(year, used_in_comp, team_number)
-    return render_template(curr_template, records=filtered_records)
-
-
-def get_filtered_cad_records(years_used=None, used_in_comp=None, team_number=None):
-    global records
-    new_records = []
-    for record in records:
-        append = True
-        if years_used and years_used.lower() not in record["years_used"].lower():
-            append = False
-        if used_in_comp is not None and used_in_comp != bool(record["used_in_comp"]):
-            append = False
-        if team_number:
-            record_team_number = int(record["team_number"])
-            match team_number:
-                case "<500":
-                    if record_team_number >= 500:
-                        append = False
-                case "500":
-                    if record_team_number < 500 or record_team_number >= 1000:
-                        append = False
-                case "1000":
-                    if record_team_number< 1000 or record_team_number >= 1500:
-                        append = False
-                case "1500":
-                    if record_team_number < 1500 or record_team_number >= 2000:
-                        append = False
-                case "2000":
-                    if record_team_number < 2000:
-                        append = False
-        if append:
-            new_records.append(record)
-
-    return new_records
-
-
-@app.route('/filter-portfolios', methods=['POST', 'GET'])
-def filter_portfolios():
-    if not records:
-        return render_template(curr_template, records=records)
-    year = request.form.get('selectedYear') if request.form.get('selectedYear') != "Any" else None
-    team_number = request.form.get('selectedTeamNumber') if request.form.get('selectedTeamNumber') != "Any" else None
-    awards_won = request.form.get('selectedAwardWon') if request.form.get('selectedAwardWon') != "Any" else None
-    filtered_records = get_filtered_portfolios_records(year, awards_won, team_number)
-    return render_template(curr_template, records=filtered_records)
-
-
-def get_filtered_portfolios_records(years_used=None, awards_won=None, team_number=None):
-    new_records = []
-    for record in records:
-        append = True
-        if years_used and years_used.lower() not in record["years_used"].lower():
-            append = False
-        if awards_won and awards_won.lower() not in record["awards_won"].lower():
-            append = False
-        if team_number:
-            record_team_number = int(record["team_number"])
-            match team_number:
-                case "<500":
-                    if record_team_number >= 500:
-                        append = False
-                case "500":
-                    if record_team_number < 500 or record_team_number >= 1000:
-                        append = False
-                case "1000":
-                    if record_team_number < 1000 or record_team_number >= 1500:
-                        append = False
-                case "1500":
-                    if record_team_number < 1500 or record_team_number >= 2000:
-                        append = False
-                case "2000":
-                    if record_team_number < 2000:
-                        append = False
-        if append:
-            new_records.append(record)
-
-    return new_records
-
+    return render_template(curr_template, records=records)
 
 @app.route('/')
 def index():
@@ -300,7 +185,7 @@ def cad_dead_wheels_page():
     return render_template("ftc/cad/dead-wheels.html", records=records)
 
 
-@app.route('/cad/drivetrains/')
+@app.route('/cad/drivetrains/', methods=['POST', 'GET'])
 def cad_drivetrains_page():
     global records, curr_template
     records = fetch_cad_data_from_github("cad", "drivetrains")
