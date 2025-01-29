@@ -5,6 +5,14 @@ body {
     justify-content: flex-start;
 }
 
+.navbar-custom {
+    background-color: #FAFAFA;
+}
+
+.navbar-custom .nav-link {
+    color: #166030;
+}
+
 header {
      background-color: #166030;
 }
