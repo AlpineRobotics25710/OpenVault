@@ -97,6 +97,10 @@ def index():
     session["curr_template"] = "ftc/index.html"
     return render_template("ftc/index.html")
 
+@app.route('/contribute')
+def contribute():
+    session["curr_template"] = "ftc/contribute.html"
+    return render_template("ftc/contribute.html")
 
 @app.route('/cad/<category>')
 def render_cad_page(category):
