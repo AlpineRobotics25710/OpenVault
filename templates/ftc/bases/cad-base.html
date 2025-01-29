@@ -1,7 +1,7 @@
 {% extends 'ftc/bases/base.html' %}
 
 {% block head %}
-    <script src="{{ url_for('static', filename='/javascript/cad-script.js') }}"></script>
+    <script src="{{ url_for('static', filename='/javascript/script.js') }}"></script>
     {% block intermediateHead %}
     {% endblock %}
 {% endblock %}
@@ -13,65 +13,11 @@
     <div class="bg-light py-2 border rounded" style="margin: 10px;">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <!-- Dropdown Container -->
-                <div class="d-flex flex-wrap flex-grow-1">
-                    <form method="POST" action="/filter-cad" id="filterForm" class="d-flex">
-                        <!-- Hidden values -->
-                        <input type="hidden" name="selectedYear" id="selectedYear" value="">
-                        <input type="hidden" name="selectedTeamNumber" id="selectedTeamNumber" value="">
-                        <input type="hidden" name="usedInComp" id="usedInComp" value="">
-
-                        <!-- Year dropdown -->
-                        <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="yearDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                Year Used
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="yearDropdownButton">
-                                <li><a class="dropdown-item" onclick="selectYear('2025')">2025</a></li>
-                                <li><a class="dropdown-item" onclick="selectYear('2024')">2024</a></li>
-                                <li><a class="dropdown-item" onclick="selectYear('2023')">2023</a></li>
-                                <li><a class="dropdown-item" onclick="selectYear('2022')">2022</a></li>
-                                <li><a class="dropdown-item" onclick="selectYear('Any')">Any</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Used in comp dropdown -->
-                        <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="compDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                Used in Competition
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="compDropdownButton">
-                                <li><a class="dropdown-item" onclick="selectUsedInComp('yes')">Yes</a></li>
-                                <li><a class="dropdown-item" onclick="selectUsedInComp('no')">No</a></li>
-                                <li><a class="dropdown-item" onclick="selectUsedInComp('Any')">Any</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Team Number dropdown -->
-                        <div class="dropdown me-2">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="teamNumDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                Team Number
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="teamNumDropdownButton">
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('2000')">Greater than 2000</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('1500')">1500-2000</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('1000')">1000-1500</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('500')">500-1000</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('<500')">Less than 500</a></li>
-                                <li><a class="dropdown-item" onclick="selectTeamNumber('Any')">Any</a></li>
-                            </ul>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Search Form
-                <div class="ms-auto">
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search here..." aria-label="Search">
-                        <button class="btn btn-primary" type="submit">Search</button>
-                    </form>
-                </div>
-                -->
+                <form class="d-flex w-100" role="search" action="/search" method="POST" id="searchForm">
+                    <input class="form-control me-2 flex-grow-1" type="search" name="searchBox" id="searchBox" placeholder="Search here..." aria-label="Search">
+                    <button class="btn btn-primary me-2" type="submit">Search</button>
+                    <button class="btn btn-secondary " type="button" id="clearSearchButton" onclick="clearSearch()">Clear</button>
+                </form>
             </div>
         </div>
     </div>
@@ -98,7 +44,8 @@
                                 </div>
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                     <div class="text-center">
-                                        <a class="btn btn-outline-dark mt-auto" href="#" data-bs-toggle="modal" data-bs-target="#popover{{ record.uuid }}">
+                                        <a class="btn btn-outline-dark mt-auto" href="#" data-bs-toggle="modal"
+                                           data-bs-target="#popover{{ record.uuid }}">
                                             See Details
                                         </a>
                                     </div>
@@ -107,12 +54,14 @@
                         </div>
 
                         <!-- Popover -->
-                        <div class="portfolio-modal modal fade" id="popover{{ record.uuid }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="portfolio-modal modal fade" id="popover{{ record.uuid }}" tabindex="-1"
+                             role="dialog" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="close-modal" data-bs-dismiss="modal">
                                         <!-- <img src="{{ url_for('static', filename='/images/close-icon.svg') }}" alt="Close modal" /> -->
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
                                     <div class="container" style="margin-top: auto; margin-bottom: auto;">
                                         <div class="row justify-content-center">
@@ -124,20 +73,30 @@
                                                             <!-- Name-->
                                                             <h2 class="fw-bolder">{{ record.title }}</h2>
                                                             <!-- Author-->
-                                                            <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record.author }}</strong></h5>
-                                                            <p><strong>Used in Competition:</strong> {{ "Yes" if record.used_in_comp == "true" else "No" }}</p>
+                                                            <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record.author }}</strong>
+                                                            </h5>
+                                                            <p><strong>Used in
+                                                                Competition:</strong> {{ "Yes" if record.used_in_comp == "true" else "No" }}
+                                                            </p>
                                                             <p><strong>Years used:</strong> {{ record.years_used }}</p>
-                                                            <p><strong>Team Number:</strong> {{ record.team_number }}</p>
+                                                            <p><strong>Team Number:</strong> {{ record.team_number }}
+                                                            </p>
                                                             <!-- Product description-->
-                                                            <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;"><strong>Description: </strong>{{ record.description }}</p>
+                                                            <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;">
+                                                                <strong>Description: </strong>{{ record.description }}
+                                                            </p>
                                                         </div>
                                                         <!-- Preview Image -->
                                                         <div class="col-sm-6 text-center">
-                                                            <img src="{{ record.preview_image_url }}" class="img-fluid d-block mx-auto" alt="preview-image">
+                                                            <img src="{{ record.preview_image_url }}"
+                                                                 class="img-fluid d-block mx-auto" alt="preview-image">
                                                         </div>
                                                         <div class="text-center" style="padding: 1rem; height: 6rem;">
                                                             <a href="{{ record.onshape_link }}">
-                                                                <img class="btn btn-outline-dark mt-auto" style="margin: 0" src="{{ url_for('static', filename='/images/onshape-logo.png') }}" alt="Onshape Logo" />
+                                                                <img class="btn btn-outline-dark mt-auto"
+                                                                     style="margin: 0"
+                                                                     src="{{ url_for('static', filename='/images/onshape-logo.png') }}"
+                                                                     alt="Onshape Logo"/>
                                                             </a>
                                                             <p style="margin: 0; margin-top: 0.25rem;">View Here</p>
                                                         </div>
