@@ -24,7 +24,7 @@
 </head>
 
 <body id="#page-top">
-<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+<nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
             <img src="{{ url_for('static', filename='/images/logos/OpenVaultLogo.png') }}" class="d-block mx-auto"
@@ -94,7 +94,7 @@
                     <a class="nav-link {% if active_route == 'ftc/portfolios/portfolios.html' %}active{% endif %}" href="/portfolios">Portfolios</a>
                 </li>
             </ul>
-            <a class="btn btn-primary ms-auto"
+            <a class="btn btn-success ms-auto"
                href="https://docs.google.com/forms/d/e/1FAIpQLScNemRDzrui1xl02BPwbOVGIItgqCvJ4Dm8n_jSsbCeVuVo3g/viewform?usp=dialog">Contribute!</a>
         </div>
     </div>
@@ -102,7 +102,7 @@
 
 {% block body %}{% endblock %}
 
-<footer class="py-5 bg-success text-white text-center footer">
+<footer class="py-4 bg-success text-white text-center footer">
     <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
         <span property="dct:title" class="fw-bold">OpenVault</span>
         by
