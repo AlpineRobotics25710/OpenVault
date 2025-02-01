@@ -1,7 +1,8 @@
-import requests
-from flask import Flask, render_template, request, session
-from bs4 import BeautifulSoup
 import uuid
+
+import requests
+from bs4 import BeautifulSoup
+from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
 app.secret_key = "779650ac697181207529db19091dc55b93aa47a70ffbbe52d9cb8330c7b9ed4f"
@@ -79,14 +80,18 @@ def search():
             search_query = search_query.lower()
             #print("search query:" + search_query)
             #print(records)
-            filtered_records = [
-                record for record in records if
-                search_query in record["title"].lower() or
-                search_query in record["author"].lower() or
-                search_query in record["description"].lower() or
-                search_query in record["team_number"].lower() or
-                search_query in record["years_used"].lower()
-            ]
+            filtered_records = []
+            for record in records:
+                if (
+                        search_query in record["title"].lower() or
+                        search_query in record["author"].lower() or
+                        search_query in record["description"].lower() or
+                        search_query in record["team_number"].lower() or
+                        search_query in record["years_used"].lower() or
+                        ("code" in curr_template and search_query in record["language"].lower()) or
+                        ("portfolios" in curr_template and search_query in record["awards_won"].lower())
+                ):
+                    filtered_records.append(record)
             return render_template(curr_template, records=filtered_records)
 
     return render_template(curr_template, records=records)
