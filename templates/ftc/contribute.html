@@ -11,7 +11,8 @@
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
                 <h1 class="display-4 fw-bolder">How to Contribute</h1>
-                <p class="lead fw-normal text-white-50 mb-0">Follow these steps to add and open-source your own files on OpenVault.</p>
+                <p class="lead fw-normal text-white-50 mb-0">Follow these steps to add and open-source your own files on
+                    OpenVault.</p>
             </div>
         </div>
     </header>
@@ -20,24 +21,31 @@
         <!-- Step 1 -->
         <div class="step-section bg-light">
             <h4 class="fw-bolder">Step 1: Go to the OpenVault Repository</h4>
-            <p>&ensp;To contribute to OpenVault, visit the <a href="https://github.com/AlpineRobotics25710/OpenVaultFiles">Official OpenVaultFiles GitHub Repository</a></p>
+            <p>&ensp;To contribute to OpenVault, visit the <a
+                    href="https://github.com/AlpineRobotics25710/OpenVaultFiles">Official OpenVaultFiles GitHub
+                Repository</a></p>
         </div>
 
         <!-- Step 2 -->
         <div class="step-section bg-light">
             <h4 class="fw-bolder">Step 2: Fork the Repository</h4>
-            <p>&ensp;Click the <strong>Fork</strong> button at the top-right of the repository to create your own copy.</p>
-            <strong>Video Guide:</strong> <a href="https://www.youtube.com/watch?v=nCKdihvneS0" target="_blank">How to Fork a Github Repository</a>
+            <p>&ensp;Click the <strong>Fork</strong> button at the top-right of the repository to create your own copy.
+            </p>
+            <strong>Video Guide:</strong> <a href="https://www.youtube.com/watch?v=nCKdihvneS0" target="_blank">How to
+            Fork a Github Repository</a>
         </div>
 
         <!-- Step 3 -->
         <div class="step-section bg-light">
             <h4 class="fw-bolder">Step 3: Add a Folder via GitHub</h4>
-            <p>&ensp;Once you've forked the repository, you can add your files directly through GitHub. <strong>But first</strong>, we have to <strong>create a folder for your files</strong>.</p>
+            <p>&ensp;Once you've forked the repository, you can add your files directly through GitHub. <strong>But
+                first</strong>, we have to <strong>create a folder for your files</strong>.</p>
             <h5>Creating Your Folder:</h5>
             <ol>
                 <li>Navigate to the appropriate folder in your forked repository (e.g., ftc/cad/drivetrains/).</li>
-                <li>Create a <strong>folder</strong> following this <strong>naming structure</strong>: “YourTeam#-NameOfContribution”</li>
+                <li>Create a <strong>folder</strong> following this <strong>naming structure</strong>:
+                    “YourTeam#-NameOfContribution”
+                </li>
                 <ol type="a">
                     <li>To create a new folder, type the folder name and then “/”</li>
                     <li>For example, type: YourTeam#-NameOfContribution/</li>
@@ -53,72 +61,93 @@
             <h5><br>Required Files:</h5>
             &ensp;Each contribution folder should have:
             <ol>
-                <li>An info.json file with metadata. </li>
+                <li>An info.json file with metadata.</li>
                 <li>A preview image (.png file) named as specified in info.json.</li>
             </ol>
             <h5>Adding your info.json file:</h5>
-            &ensp;On the same page that you created your folder, and in the same text box that you created your folder with:
+            &ensp;On the same page that you created your folder, and in the same text box that you created your folder
+            with:
             <ol>
                 <li>Click <strong>"Add file" → "Create new file"</strong>.</li>
                 <li>Type “info.json” in the textbox that appears to create/name your info.json file.</li>
-                <li>Name your file "info.json" and use the <strong>corresponding format</strong>(based on what type of contribution you are submitting):</li>
+                <li>Name your file "info.json" and use the <strong>corresponding format</strong>(based on what type of
+                    contribution you are submitting):
+                </li>
 
-            <strong><br>CAD Contribution</strong> info.json file format:
-<pre class="bg-white p-3" style="border-radius: 5px;">
-{
-    "preview-image-name": "your-preview-image.png",
-    "title": "Your Drivetrain Title",
-    "author": "Your Name",
-    "description": "Describe your drivetrain, including unique features.",
-    "used-in-comp": true,
-    "team-number": "Your Team Number",
-    "years-used": "Year(s) Used",
-    "onshape-link": "Your CAD Model Link"
-}</pre>
-            <strong>Code Contribution</strong> info.json file format:
-<pre class="bg-white p-3 " style="border-radius: 5px;">
-{
-	"preview-image-name": "your-image-file-name.png",
-    "download-name": "sample-code.png",
-	"title": "Sample Drivetrain",
-	"author": "Your Name or you team's name",
-	"description": "Description of your code contribution",
-	"used-in-comp": true,
-	"team-number": "25710",
-	"years-used": "2024-2025",
-	"language": "Java, Python"
-}</pre>
-            <strong>Portfolio Contribution</strong> info.json file format:
-<pre class="bg-white p-3" style="border-radius: 5px;">
-{
-	"preview-image-name": "your-image-file-name.png",
-    "file-name": "sample-drivetrain.png",
-	"title": "Sample Drivetrain",
-	"author": "Arjun Mahajan",
-	"description": "Description of your portfolio submission",
-	"team-number": "25710",
-	"years-used": "2024-2025",
-	"awards-won": "Inspire, Think"
-}</pre>
-            <li>Click <strong>Commit Changes</strong> to save.</li>
+                <strong><br>CAD Contribution</strong> info.json file format:
+                <pre class="bg-white p-3" style="border-radius: 5px;">
+                    {
+                        "preview-image-name": "your-preview-image.png",
+                        "title": "Your Drivetrain Title",
+                        "author": "Your Name",
+                        "description": "Describe your drivetrain, including unique features.",
+                        "used-in-comp": true if used in competition otherwise false,
+                        "team-number": "Your Team Number",
+                        "years-used": "Year(s) Used",
+                        "onshape-link": "Link to you CAD model on Onshape"
+                    }
+                </pre>
+
+                <strong>Code Contribution</strong> info.json file format:
+                <pre class="bg-white p-3 " style="border-radius: 5px;">
+                    {
+                        "preview-image-name": "your-image-file-name.png",
+                        "download-name": "name of your file.zip",
+                        "title": "title of your code contribution",
+                        "author": "your name or you team's name",
+                        "description": "description of your code contribution",
+                        "used-in-comp": true if used in competition otherwise false,
+                        "team-number": "your team number",
+                        "years-used": "years you used it",
+                        "language": "languages-used"
+                    }
+                </pre>
+
+                <strong>Portfolio Contribution</strong> info.json file format:
+                <pre class="bg-white p-3" style="border-radius: 5px;">
+                    {
+                        "preview-image-name": "your-image-file-name.png",
+                        "file-name": "name of portfolio-file.pdf",
+                        "title": "name of your portfolio-submission",
+                        "author": "your name or you team's name",
+                        "description": "description of your portfolio submission",
+                        "team-number": "your team number",
+                        "years-used": "years you used it",
+                        "awards-won": "awards this portfolio won"
+                    }
+                </pre>
+                <li>Click <strong>Commit Changes</strong> to save.</li>
             </ol>
             <h5>Uploading Your Preview Image:</h5>
-            &ensp;Click <strong>"Add file" → "Upload files"</strong> and upload your image and then click <strong>Commit Changes</strong> to save.
-            <br><strong>&ensp;**Important Note</strong>: The filename must match "preview-image-name" in your JSON file.
+            &ensp;Click <strong>"Add file" → "Upload files"</strong> and upload your image and then click <strong>Commit
+            Changes</strong> to save.
+            <br>
+            <br>
+            <p>
+                <strong>Important Note:</strong>
+                Your preview image and other download names for portfolio and code contributions should match the name of the
+                corresponding files in your info.json file, otherwise the files will not be found.
+                For the "used-in-comp" field, you must put either "true" or "false". There cannot be any quotations around the
+                "true" or "false".
+            </p>
         </div>
 
         <!-- Step 5 -->
         <div class="step-section bg-light">
             <h4 class="fw-bolder">Step 5: Create a Pull Request</h4>
-            &ensp;Once you've added your files, submit a <strong>Pull Request (PR)</strong> to merge your changes into the main repository.
+            &ensp;Once you've added your files, submit a <strong>Pull Request (PR)</strong> to merge your changes into
+            the main repository.
             <h5><br>Steps to Create a Pull Request:</h5>
             <ol>
                 <li>Go to your forked repository.</li>
                 <li>Click <strong>Contribute > Open Pull Request.</strong></li>
-                <li>Add a title and description explaining your changes/contribution(doesn’t need to be too in depth, just make sure to add the name of your contribution folder somewhere so we can review it!!).</li>
+                <li>Add a title and description explaining your changes/contribution(doesn’t need to be too in depth,
+                    just make sure to add the name of your contribution folder somewhere so we can review it!!).
+                </li>
                 <li>Click <strong>Create Pull Request</strong>.</li>
             </ol>
-            <strong><br>Video Guide:</strong> <a href="https://www.youtube.com/watch?v=nCKdihvneS0" target="_blank">How to Make a Pull Request</a>
+            <strong><br>Video Guide:</strong> <a href="https://www.youtube.com/watch?v=nCKdihvneS0" target="_blank">How
+            to Make a Pull Request</a>
         </div>
 
         <!-- Step 6 -->
