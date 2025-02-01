@@ -3,6 +3,7 @@ import uuid
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, session
+from requests import JSONDecodeError
 
 app = Flask(__name__)
 app.secret_key = "779650ac697181207529db19091dc55b93aa47a70ffbbe52d9cb8330c7b9ed4f"
@@ -18,8 +19,7 @@ def inject_active_route():
 # Generic function to fetch data from GitHub
 def fetch_data_from_github(section, sub_section):
     base_url = "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc"
-    github_page = requests.get(
-        f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
+    github_page = requests.get(f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
     session["records"] = []
 
     if github_page.status_code == 200:
@@ -31,7 +31,10 @@ def fetch_data_from_github(section, sub_section):
         for subfolder in links:
             post_info = requests.get(f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/info.json")
             if post_info.status_code == 200:
-                post_info_json = post_info.json()
+                try:
+                    post_info_json = post_info.json()
+                except JSONDecodeError:
+                    continue
 
                 record = {
                     "uuid": str(uuid.uuid4()),
@@ -44,12 +47,11 @@ def fetch_data_from_github(section, sub_section):
                 }
 
                 if section == "code":
-                    record[
-                        "download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['download-name']}"
+                    record["download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['download-name']}"
                     record["language"] = post_info_json["language"]
+                    record["used_in_comp"] = post_info_json["used-in-comp"]
                 elif section == "portfolios":
-                    record[
-                        "download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['file-name']}"
+                    record["download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['file-name']}"
                     record["awards_won"] = post_info_json["awards-won"]
                 elif section == "cad":
                     record["used_in_comp"] = post_info_json["used-in-comp"]

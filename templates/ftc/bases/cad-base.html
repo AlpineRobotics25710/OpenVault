@@ -1,7 +1,6 @@
 {% extends 'ftc/bases/base.html' %}
 
 {% block head %}
-    <script src="{{ url_for('static', filename='/javascript/script.js') }}"></script>
     {% block intermediateHead %}
     {% endblock %}
 {% endblock %}
@@ -44,7 +43,7 @@
                                 </div>
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                     <div class="text-center">
-                                        <a class="btn btn-outline-dark mt-auto" href="#" data-bs-toggle="modal"
+                                        <a class="btn btn-success mt-auto" href="#" data-bs-toggle="modal"
                                            data-bs-target="#popover{{ record.uuid }}">
                                             See Details
                                         </a>
@@ -56,18 +55,18 @@
                         <!-- Popover -->
                         <div class="portfolio-modal modal fade" id="popover{{ record.uuid }}" tabindex="-1"
                              role="dialog" aria-hidden="true">
-                            <div class="modal-dialog">
+                            <div class="modal-dialog modal-dialog-centered modal-xl">
                                 <div class="modal-content">
                                     <div class="close-modal" data-bs-dismiss="modal">
-                                        <!-- <img src="{{ url_for('static', filename='/images/close-icon.svg') }}" alt="Close modal" /> -->
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>
-                                    <div class="container" style="margin-top: auto; margin-bottom: auto;">
+                                    <div class="container-fluid"
+                                         style="max-height: 90vh; overflow-y: auto; margin-top: auto; margin-bottom: auto;">
                                         <div class="row justify-content-center">
                                             <div class="col-lg-11">
                                                 <div class="modal-body" style="margin-top: 2rem;">
-                                                    <div class="row" style="align-items: center;">
+                                                    <div class="row align-items-center">
                                                         <!-- Text Content -->
                                                         <div class="col-sm-6">
                                                             <!-- Name-->
@@ -75,14 +74,14 @@
                                                             <!-- Author-->
                                                             <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record.author }}</strong>
                                                             </h5>
-                                                            <p><strong>Used in
-                                                                Competition:</strong> {{ "Yes" if record.used_in_comp == "true" else "No" }}
-                                                            </p>
-                                                            <p><strong>Years used:</strong> {{ record.years_used }}</p>
                                                             <p><strong>Team Number:</strong> {{ record.team_number }}
                                                             </p>
-                                                            <!-- Product description-->
-                                                            <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid lightslategray; border-radius: 0.375rem;">
+                                                            <p><strong>Used in
+                                                                Competition:</strong> {{ "Yes" if record.used_in_comp == True else "No" }}
+                                                            </p>
+                                                            <p><strong>Years used:</strong> {{ record.years_used }}</p>
+                                                            <!-- Description-->
+                                                            <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid rgb(64,133,88); border-radius: 0.375rem;">
                                                                 <strong>Description: </strong>{{ record.description }}
                                                             </p>
                                                         </div>
@@ -93,7 +92,7 @@
                                                         </div>
                                                         <div class="text-center" style="padding: 1rem; height: 6rem;">
                                                             <a href="{{ record.onshape_link }}">
-                                                                <img class="btn btn-outline-dark mt-auto"
+                                                                <img class="btn btn-outline-success mt-auto"
                                                                      style="margin: 0"
                                                                      src="{{ url_for('static', filename='/images/onshape-logo.png') }}"
                                                                      alt="Onshape Logo"/>
