@@ -33,6 +33,21 @@ header {
     text-decoration: none;
 }
 
+.markdown-container {
+    display: flex;
+    justify-content: center;
+    margin: 30px auto;
+}
+
+github-md {
+    display: block;
+    margin: 30px auto;
+    padding: 20px;
+    max-width: 1500px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
 .license-icon {
     height: 20px;
     margin-left: 3px;

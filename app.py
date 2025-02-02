@@ -12,21 +12,23 @@ app.secret_key = "779650ac697181207529db19091dc55b93aa47a70ffbbe52d9cb8330c7b9ed
 @app.context_processor
 def inject_active_route():
     # Provide the current route name to all templates
-    #print(session["curr_template"])
+    # print(session["curr_template"])
     return {'active_route': session["curr_template"]}
 
 
 # Generic function to fetch data from GitHub
 def fetch_data_from_github(section, sub_section):
     base_url = "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc"
-    github_page = requests.get(f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
+    github_page = requests.get(
+        f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
     session["records"] = []
 
     if github_page.status_code == 200:
         soup = BeautifulSoup(github_page.content, "html.parser")
         unique_titles = set()
         links = [subfolder for subfolder in soup.find_all("a", class_="Link--primary") if
-                 subfolder.get("title") not in unique_titles and not unique_titles.add(subfolder.get("title")) and "filler" not in subfolder.get("title")]
+                 subfolder.get("title") not in unique_titles and not unique_titles.add(
+                     subfolder.get("title")) and "filler" not in subfolder.get("title")]
 
         for subfolder in links:
             post_info = requests.get(f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/info.json")
@@ -47,11 +49,13 @@ def fetch_data_from_github(section, sub_section):
                 }
 
                 if section == "code":
-                    record["download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['download-name']}"
+                    record[
+                        "download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['download-name']}"
                     record["language"] = post_info_json["language"]
                     record["used_in_comp"] = post_info_json["used-in-comp"]
                 elif section == "portfolios":
-                    record["download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['file-name']}"
+                    record[
+                        "download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['file-name']}"
                     record["awards_won"] = post_info_json["awards-won"]
                 elif section == "cad":
                     record["used_in_comp"] = post_info_json["used-in-comp"]
@@ -72,16 +76,16 @@ def search():
 
     curr_template = session["curr_template"]
     records = session["records"]
-    #print("curr template:" + curr_template)
-    #print("records:" + str(records))
+    # print("curr template:" + curr_template)
+    # print("records:" + str(records))
     if request.method == "POST":
         search_query = request.form.get("searchBox")
         if search_query == "":
             return render_template(curr_template, records=records)
         if search_query:
             search_query = search_query.lower()
-            #print("search query:" + search_query)
-            #print(records)
+            # print("search query:" + search_query)
+            # print(records)
             filtered_records = []
             for record in records:
                 if (
@@ -104,10 +108,14 @@ def index():
     session["curr_template"] = "ftc/index.html"
     return render_template("ftc/index.html")
 
+
 @app.route('/contribute')
 def contribute():
     session["curr_template"] = "ftc/contribute.html"
-    return render_template("ftc/contribute.html")
+    contribute_markdown = requests.get(
+        "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/CONTRIBUTE.md").text
+    return render_template("ftc/contribute.html", markdown=contribute_markdown)
+
 
 @app.route('/cad/<category>')
 def render_cad_page(category):
