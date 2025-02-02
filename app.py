@@ -26,7 +26,7 @@ def fetch_data_from_github(section, sub_section):
         soup = BeautifulSoup(github_page.content, "html.parser")
         unique_titles = set()
         links = [subfolder for subfolder in soup.find_all("a", class_="Link--primary") if
-                 subfolder.get("title") not in unique_titles and not unique_titles.add(subfolder.get("title"))]
+                 subfolder.get("title") not in unique_titles and not unique_titles.add(subfolder.get("title")) and "filler" not in subfolder.get("title")]
 
         for subfolder in links:
             post_info = requests.get(f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/info.json")
