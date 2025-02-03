@@ -69,43 +69,47 @@
                                href="/cad/linkages">Linkages</a></li>
                         <li><a class="dropdown-item {% if active_route == 'ftc/cad/outtakes.html' %}active{% endif %}"
                                href="/cad/outtakes">Outtakes</a></li>
-                        <a class="dropdown-item {% if active_route == 'ftc/cad/power-transmissions.html' %}active{% endif %}"
-                           href="/cad/power-transmissions">Power Transmissions</a>
+                        <li>
+                            <a class="dropdown-item {% if active_route == 'ftc/cad/power-transmissions.html' %}active{% endif %}"
+                               href="/cad/power-transmissions">Power Transmissions</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'ftc/cad/transfers.html' %}active{% endif %}"
+                               href="/cad/transfers">Transfers</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'ftc/cad/turrets.html' %}active{% endif %}"
+                               href="/cad/turrets">Turrets</a></li>
+                    </ul>
                 </li>
-                <li><a class="dropdown-item {% if active_route == 'ftc/cad/transfers.html' %}active{% endif %}"
-                       href="/cad/transfers">Transfers</a></li>
-                <li><a class="dropdown-item {% if active_route == 'ftc/cad/turrets.html' %}active{% endif %}"
-                       href="/cad/turrets">Turrets</a></li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if 'code' in active_route %}active{% endif %}" href="#"
+                       role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Code
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item {% if active_route == 'ftc/code/driver-enhancements.html' %}active{% endif %}"
+                               href="/code/driver-enhancements">Driver Enhancements</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'ftc/code/ftclib.html' %}active{% endif %}"
+                               href="/code/ftclib">FTC Lib</a></li>
+                        <li><a class="dropdown-item {% if active_route == 'ftc/code/gamepad.html' %}active{% endif %}"
+                               href="/code/gamepad">Gamepad</a></li>
+                        <li>
+                            <a class="dropdown-item {% if active_route == 'ftc/code/pedro-pathing.html' %}active{% endif %}"
+                               href="/code/pedro-pathing">Pedro Pathing</a></li>
+                        <li>
+                            <a class="dropdown-item {% if active_route == 'ftc/code/road-runner.html' %}active{% endif %}"
+                               href="/code/road-runner">Road Runner</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active_route == 'ftc/portfolios/portfolios.html' %}active{% endif %}"
+                       href="/portfolios">Portfolios</a>
+                </li>
             </ul>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {% if 'code' in active_route %}active{% endif %}" href="#"
-                   role="button"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                    Code
-                </a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="dropdown-item {% if active_route == 'ftc/code/driver-enhancements.html' %}active{% endif %}"
-                           href="/code/driver-enhancements">Driver Enhancements</a></li>
-                    <li><a class="dropdown-item {% if active_route == 'ftc/code/ftclib.html' %}active{% endif %}"
-                           href="/code/ftclib">FTC Lib</a></li>
-                    <li><a class="dropdown-item {% if active_route == 'ftc/code/gamepad.html' %}active{% endif %}"
-                           href="/code/gamepad">Gamepad</a></li>
-                    <li>
-                        <a class="dropdown-item {% if active_route == 'ftc/code/pedro-pathing.html' %}active{% endif %}"
-                           href="/code/pedro-pathing">Pedro Pathing</a></li>
-                    <li>
-                        <a class="dropdown-item {% if active_route == 'ftc/code/road-runner.html' %}active{% endif %}"
-                           href="/code/road-runner">Road Runner</a></li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if active_route == 'ftc/portfolios/portfolios.html' %}active{% endif %}"
-                   href="/portfolios">Portfolios</a>
-            </li>
-            </ul>
-            <a class="btn btn-light ms-auto" style="color:rgb(64,133,88)" href="/contribute">Contribute!</a>
+            <a class="btn btn-light" style="color:rgb(64,133,88); margin-right: 10px;"
+               href="/contribute">Contribute!</a>
+            <a class="btn" style="background-color:rgb(119,126,229); color: white;" target="_blank" href="https://discord.gg/gSqgsRXd">
+                Join the Discord!</a>
         </div>
     </div>
 </nav>
