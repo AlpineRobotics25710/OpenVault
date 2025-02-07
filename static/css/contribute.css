@@ -1,0 +1,27 @@
+.contribute-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.form-check-label {
+    font-weight: normal;
+}
+
+.form-check-input {
+    margin-right: 10px;
+}
+
+.select-container {
+    display: flex;
+    flex-direction: column;
+}

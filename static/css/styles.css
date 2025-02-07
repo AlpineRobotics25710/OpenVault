@@ -33,31 +33,6 @@ header {
     text-decoration: none;
 }
 
-.markdown-container {
-    display: flex;
-    justify-content: center;
-    margin: 30px auto;
-    padding: 0 15px; /* Adds padding on smaller screens */
-}
-
-github-md {
-    display: block;
-    margin: 30px auto;
-    padding: 20px;
-    max-width: 90vw; /* Limits width to 90% of the viewport width */
-    background: #f8f9fa;
-    border-radius: 8px;
-    word-wrap: break-word; /* Ensures long words wrap properly */
-    overflow-wrap: break-word;
-}
-
-@media (max-width: 768px) {
-    github-md {
-        padding: 15px;
-        max-width: 100%; /* Allows it to take the full width of smaller screens */
-    }
-}
-
 .license-icon {
     height: 20px;
     margin-left: 3px;

@@ -2,11 +2,12 @@
 
 {% block head %}
     <title>OpenVault - Contribute</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/contribute.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contribute.css') }}">
+    <script src="{{ url_for('static', filename='/javascript/contribute-script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
-    <!-- Header-->
+    <!-- Header -->
     <header class="py-5">
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
@@ -17,11 +18,121 @@
         </div>
     </header>
 
-    <div class="container markdown-container">
-        <github-md>
-            {{ markdown }}
-        </github-md>
-    </div>
+    <form action="/">
+        <div class="contribute-container">
+            <!-- Category Selection -->
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" id="category" aria-label="Choose a category" onchange="selectCategory(this)">
+                    <option selected>Choose a category</option>
+                    <option value="CAD">CAD</option>
+                    <option value="Code">Code</option>
+                    <option value="Portfolios">Portfolios</option>
+                </select>
+            </div>
 
-    <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-GitHub.js"></script>
+            <!-- CAD Subcategory Dropdown -->
+            <div id="cadSubcategory" class="select-container d-none mb-3">
+                <label for="cadSubcategorySelect" class="form-label">Choose a CAD Subcategory</label>
+                <select class="form-select" id="cadSubcategorySelect">
+                    <option value="Active Intakes">Active Intakes</option>
+                    <option value="Arms">Arms</option>
+                    <option value="Dead Axles">Dead Axles</option>
+                    <option value="Drivetrains">Drivetrains</option>
+                    <option value="Linear Motion Guides">Linear Motion Guides</option>
+                    <option value="Linkages">Linkages</option>
+                    <option value="Outtakes">Outtakes</option>
+                    <option value="Power Transmissions">Power Transmissions</option>
+                    <option value="Transfers">Transfers</option>
+                    <option value="Turrets">Turrets</option>
+                </select>
+            </div>
+
+            <!-- Code Subcategory Dropdown -->
+            <div id="codeSubcategory" class="select-container d-none mb-3">
+                <label for="codeSubcategorySelect" class="form-label">Choose a Code Subcategory</label>
+                <select class="form-select" id="codeSubcategorySelect">
+                    <option value="Driver Enhancements">Driver Enhancements</option>
+                    <option value="FTC Lib">FTC Lib</option>
+                    <option value="Gamepad">Gamepad</option>
+                    <option value="Pedro Pathing">Pedro Pathing</option>
+                    <option value="Road Runner">Road Runner</option>
+                </select>
+            </div>
+
+            <!-- Title Input -->
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" id="title" class="form-control" aria-describedby="titleBlock">
+            </div>
+
+            <!-- Author Input -->
+            <div class="mb-3">
+                <label for="author" class="form-label">Author</label>
+                <input type="text" id="author" class="form-control" aria-describedby="authorBlock">
+            </div>
+
+            <!-- Team Number Input -->
+            <div class="mb-3">
+                <label for="teamNumber" class="form-label">Team Number</label>
+                <input type="number" id="teamNumber" class="form-control" aria-describedby="teamNumberBlock">
+            </div>
+
+            <!-- Years Used Input -->
+            <div class="mb-3">
+                <label for="yearsUsed" class="form-label">Years Used (e.g. 2024-2025)</label>
+                <input type="text" id="yearsUsed" class="form-control" aria-describedby="yearsUsedBlock">
+            </div>
+
+            <!-- Description Input -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" rows="3"></textarea>
+            </div>
+
+            <!-- CAD Section -->
+            <div id="cad" class="d-none mb-3">
+                <label for="onshape-link" class="form-label">Onshape Link</label>
+                <input type="text" id="onshape-link" class="form-control" aria-describedby="onshapeLinkBlock">
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="usedInComp">
+                    <label class="form-check-label" for="usedInComp">
+                        Used in Competition
+                    </label>
+                </div>
+            </div>
+
+            <!-- Code Section -->
+            <div id="code" class="d-none mb-3">
+                <label for="languageUsed" class="form-label">Languages Used (e.g. Java, Kotlin, etc.)</label>
+                <input type="text" id="languageUsed" class="form-control" aria-describedby="languageUsed">
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="usedInComp">
+                    <label class="form-check-label" for="usedInComp">
+                        Used in Competition
+                    </label>
+                </div>
+            </div>
+
+            <!-- Portfolio Section -->
+            <div id="portfolio" class="d-none mb-3">
+                <label for="awardsWon" class="form-label">Awards Won (e.g. Inspire 1)</label>
+                <input type="text" id="awardsWon" class="form-control" aria-describedby="languageUsed">
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="usedInComp">
+                    <label class="form-check-label" for="usedInComp">
+                        Used in Competition
+                    </label>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary w-100">Submit</button>
+            </div>
+        </div>
+    </form>
 {% endblock %}

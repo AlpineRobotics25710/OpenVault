@@ -2,8 +2,9 @@ import uuid
 
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, jsonify
 from requests import JSONDecodeError
+from contribute import create_pull_request, create_file, create_branch
 
 app = Flask(__name__)
 app.secret_key = "779650ac697181207529db19091dc55b93aa47a70ffbbe52d9cb8330c7b9ed4f"
@@ -115,6 +116,37 @@ def contribute():
     contribute_markdown = requests.get(
         "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/CONTRIBUTE.md").text
     return render_template("ftc/contribute.html", markdown=contribute_markdown)
+
+
+@app.route("/submit-pr", methods=["GET", "POST"])
+def submit_pr():
+    """Handles form submission and creates a PR."""
+    """
+    data = request.json
+    filename = data.get("filename", "new_file.txt")
+    content = data.get("content", "Default content")
+    pr_title = data.get("title", "New PR from Flask")
+    pr_body = data.get("body", "This PR was created via API.")
+    """
+    filename = "new_file.txt"
+    content = "Test content"
+    pr_title = "Test New PR from Flask"
+    pr_body = "Test body of new pr from Flask"
+
+    # Step 1: Create a new branch
+    create_branch_response = create_branch()
+    if "error" in create_branch_response:
+        return jsonify(create_branch_response), 400
+
+    # Step 2: Add a file to the branch
+    file_response = create_file(filename, content)
+    if "error" in file_response:
+        return jsonify(file_response), 400
+
+    # Step 3: Create a pull request
+    pr_response = create_pull_request(pr_title, pr_body)
+
+    return jsonify(pr_response)
 
 
 @app.route('/cad/<category>')
