@@ -1,15 +1,17 @@
 import requests
 import base64
+from flask import request
 
 # Expires in a year. Keep secret.
 GITHUB_TOKEN = "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"
 OWNER = "AlpineRobotics25710"
 REPO = "OpenVaultFiles"
-BRANCH_NAME = "feature-branch"  # Change based on user input
+BRANCH_NAME = "if-this-is-the-name-that-means-somethings-wrong"
 
 GITHUB_API_URL = f"https://api.github.com/repos/{OWNER}/{REPO}"
 
 def create_branch(base_branch="main"):
+    global BRANCH_NAME
     """Creates a new branch from main (or another base branch)."""
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
 
@@ -21,6 +23,7 @@ def create_branch(base_branch="main"):
     base_sha = base_branch_info.json()["object"]["sha"]
 
     # Create a new branch
+    BRANCH_NAME = request.form.get("teamNumber") + "-" + request.form.get("title").replace(" ", "_")
     branch_ref = f"refs/heads/{BRANCH_NAME}"
     create_branch_response = requests.post(
         f"{GITHUB_API_URL}/git/refs",

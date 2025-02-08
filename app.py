@@ -67,7 +67,7 @@ def fetch_data_from_github(section, sub_section):
     return session["records"]
 
 
-@app.route('/search', methods=["GET", "POST"])
+@app.route('/search', methods=["POST"])
 def search():
     if "curr_template" not in session:
         return index()

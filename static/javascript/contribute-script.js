@@ -25,3 +25,12 @@ function selectCategory(selectElement) {
         portfoliosExtra.classList.remove('d-none')
     }
 }
+
+function validateForm() {
+    const category = document.getElementById('category').value;
+    if (!category) {
+        alert('Please select a category.');
+        return false;
+    }
+    return true;
+}

@@ -18,13 +18,13 @@
         </div>
     </header>
 
-    <form action="/">
+    <form action="/submit-pr" onsubmit="return validateForm()">
         <div class="contribute-container">
             <!-- Category Selection -->
             <div class="mb-3">
                 <label for="category" class="form-label">Category</label>
-                <select class="form-select" id="category" aria-label="Choose a category" onchange="selectCategory(this)">
-                    <option selected>Choose a category</option>
+                <select class="form-select" id="category" aria-label="Choose a category" required onchange="selectCategory(this)">
+                    <option value="" selected disabled>Choose a category</option>
                     <option value="CAD">CAD</option>
                     <option value="Code">Code</option>
                     <option value="Portfolios">Portfolios</option>
@@ -34,7 +34,8 @@
             <!-- CAD Subcategory Dropdown -->
             <div id="cadSubcategory" class="select-container d-none mb-3">
                 <label for="cadSubcategorySelect" class="form-label">Choose a CAD Subcategory</label>
-                <select class="form-select" id="cadSubcategorySelect">
+                <select class="form-select" id="cadSubcategorySelect" required>
+                    <option value="" selected disabled>Choose a CAD subcategory</option>
                     <option value="Active Intakes">Active Intakes</option>
                     <option value="Arms">Arms</option>
                     <option value="Dead Axles">Dead Axles</option>
@@ -51,7 +52,8 @@
             <!-- Code Subcategory Dropdown -->
             <div id="codeSubcategory" class="select-container d-none mb-3">
                 <label for="codeSubcategorySelect" class="form-label">Choose a Code Subcategory</label>
-                <select class="form-select" id="codeSubcategorySelect">
+                <select class="form-select" id="codeSubcategorySelect" required>
+                    <option value="" selected disabled>Choose a Code subcategory</option>
                     <option value="Driver Enhancements">Driver Enhancements</option>
                     <option value="FTC Lib">FTC Lib</option>
                     <option value="Gamepad">Gamepad</option>
@@ -63,40 +65,40 @@
             <!-- Title Input -->
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
-                <input type="text" id="title" class="form-control" aria-describedby="titleBlock">
+                <input type="text" id="title" class="form-control" required>
             </div>
 
             <!-- Author Input -->
             <div class="mb-3">
                 <label for="author" class="form-label">Author</label>
-                <input type="text" id="author" class="form-control" aria-describedby="authorBlock">
+                <input type="text" id="author" class="form-control" required>
             </div>
 
             <!-- Team Number Input -->
             <div class="mb-3">
                 <label for="teamNumber" class="form-label">Team Number</label>
-                <input type="number" id="teamNumber" class="form-control" aria-describedby="teamNumberBlock">
+                <input type="number" id="teamNumber" class="form-control" required>
             </div>
 
             <!-- Years Used Input -->
             <div class="mb-3">
                 <label for="yearsUsed" class="form-label">Years Used (e.g. 2024-2025)</label>
-                <input type="text" id="yearsUsed" class="form-control" aria-describedby="yearsUsedBlock">
+                <input type="text" id="yearsUsed" class="form-control" required>
             </div>
 
             <!-- Description Input -->
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" rows="3"></textarea>
+                <textarea class="form-control" id="description" rows="3" required></textarea>
             </div>
 
             <!-- CAD Section -->
             <div id="cad" class="d-none mb-3">
                 <label for="onshape-link" class="form-label">Onshape Link</label>
-                <input type="text" id="onshape-link" class="form-control" aria-describedby="onshapeLinkBlock">
+                <input type="url" id="onshape-link" class="form-control" required>
 
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="usedInComp">
+                    <input class="form-check-input" type="checkbox" id="usedInComp">
                     <label class="form-check-label" for="usedInComp">
                         Used in Competition
                     </label>
@@ -106,27 +108,42 @@
             <!-- Code Section -->
             <div id="code" class="d-none mb-3">
                 <label for="languageUsed" class="form-label">Languages Used (e.g. Java, Kotlin, etc.)</label>
-                <input type="text" id="languageUsed" class="form-control" aria-describedby="languageUsed">
+                <input type="text" id="languageUsed" class="form-control" required>
 
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="usedInComp">
+                    <input class="form-check-input" type="checkbox" id="usedInComp">
                     <label class="form-check-label" for="usedInComp">
                         Used in Competition
                     </label>
+                </div>
+
+                <div class="mb-3">
+                    <label for="codeUpload" class="form-label">Please upload your code as a zip file</label>
+                    <input class="form-control" type="file" id="codeUpload" accept=".zip" required>
                 </div>
             </div>
 
             <!-- Portfolio Section -->
             <div id="portfolio" class="d-none mb-3">
                 <label for="awardsWon" class="form-label">Awards Won (e.g. Inspire 1)</label>
-                <input type="text" id="awardsWon" class="form-control" aria-describedby="languageUsed">
+                <input type="text" id="awardsWon" class="form-control" required>
 
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="usedInComp">
+                    <input class="form-check-input" type="checkbox" id="usedInComp">
                     <label class="form-check-label" for="usedInComp">
                         Used in Competition
                     </label>
                 </div>
+
+                <div class="mb-3">
+                    <label for="portfolioUpload" class="form-label">Please upload your portfolio as a PDF</label>
+                    <input class="form-control" type="file" id="portfolioUpload" accept=".pdf" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="previewImage" class="form-label">Please upload a preview picture (.png or .jpeg)</label>
+                <input class="form-control" type="file" id="previewImage" accept=".png, .jpg, .jpeg" required>
             </div>
 
             <!-- Submit Button -->
