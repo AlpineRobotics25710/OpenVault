@@ -113,9 +113,7 @@ def index():
 @app.route('/contribute')
 def contribute():
     session["curr_template"] = "ftc/contribute.html"
-    contribute_markdown = requests.get(
-        "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/CONTRIBUTE.md").text
-    return render_template("ftc/contribute.html", markdown=contribute_markdown)
+    return render_template("ftc/contribute.html")
 
 
 @app.route("/submit-pr", methods=["GET", "POST"])

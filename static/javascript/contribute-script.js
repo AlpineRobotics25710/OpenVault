@@ -9,8 +9,8 @@ function selectCategory(selectElement) {
     const portfoliosExtra = document.getElementById('portfolio');
 
     // Get all input/select elements within each category section, excluding "used in comp"
-    const cadInputs = cadSection.querySelectorAll('input:not(#usedInCompCAD), select, textarea');
-    const codeInputs = codeSection.querySelectorAll('input:not(#usedInCompCode), select, textarea, input[type="file"]');
+    const cadInputs = cadExtra.querySelectorAll('input:not(#usedInCompCAD), select, textarea');
+    const codeInputs = codeExtra.querySelectorAll('input:not(#usedInCompCode), select, textarea, input[type="file"]');
     const portfolioInputs = portfoliosExtra.querySelectorAll('input, select, textarea, input[type="file"]');
 
     // Reset visibility of all sections
@@ -42,9 +42,27 @@ function selectCategory(selectElement) {
 
 function validateForm() {
     const category = document.getElementById('category').value;
+
     if (!category) {
         alert('Please select a category.');
         return false;
     }
+
+    // Validate subcategory for CAD and Code
+    if (category === 'CAD') {
+        const cadSubcategory = document.getElementById('cadSubcategorySelect').value;
+        if (!cadSubcategory) {
+            alert('Please select a CAD subcategory.');
+            return false;
+        }
+    } else if (category === 'Code') {
+        const codeSubcategory = document.getElementById('codeSubcategorySelect').value;
+        if (!codeSubcategory) {
+            alert('Please select a Code subcategory.');
+            return false;
+        }
+    }
+
     return true;
 }
+
