@@ -124,7 +124,7 @@ def submit_pr():
     code_subcategory = request.form.get("codeSubcategory")
 
     if not team_number or not title or not category:
-        return jsonify({"error": "Missing required fields"}), 400
+        return render_template("ftc/contribute.html", error=True, error_message={"error": "Missing required fields"}), 400
 
     # Generate branch name
     branch_name = f"{team_number}-{title.replace(' ', '_')}"
@@ -132,7 +132,7 @@ def submit_pr():
     # Step 2: Create a new branch
     create_branch_response = create_branch(branch_name)
     if "error" in create_branch_response:
-        return jsonify(create_branch_response), 400
+        return render_template("ftc/contribute.html", error=True, error_message=create_branch_response), 400
 
     # Step 3: Upload the preview image
     preview_file = request.files.get("previewImage")
@@ -148,7 +148,7 @@ def submit_pr():
         preview_content = preview_file.read()
         file_response = create_file(preview_filename, base64.b64encode(preview_content).decode("utf-8"), branch_name)
         if "error" in file_response:
-            return jsonify(file_response), 400
+            return render_template("ftc/contribute.html", error=True, error_message=file_response), 400
 
     # Step 4: Upload the code zip file or portfolio PDF
     file = None
@@ -164,7 +164,7 @@ def submit_pr():
         file_content = file.read()
         file_response = create_file(filename, base64.b64encode(file_content).decode("utf-8"), branch_name)
         if "error" in file_response:
-            return jsonify(file_response), 400
+            return render_template("ftc/contribute.html", error=True, error_message=file_response), 400
 
     # Step 5: Create the info.json file
     # Do not change this formatting, it needs to be formatted like this
@@ -208,7 +208,7 @@ def submit_pr():
     file_response = create_file(info_file_path, encoded_content, branch_name)
 
     if "error" in file_response:
-        return jsonify(file_response), 400
+        return render_template("ftc/contribute.html", error=True, error_message=file_response), 400
 
     # Step 6: Create a pull request
     pr_title = f"{team_number} - {title}"
@@ -216,7 +216,11 @@ def submit_pr():
 
     pr_response = create_pull_request(pr_title, pr_body, branch_name)
 
-    return jsonify(pr_response)
+    if pr_response:
+        session["curr_template"] = "ftc/contribute.html"
+        return render_template("ftc/contribute.html", submitted=True)
+    else:
+        return render_template("ftc/contribute.html", error=True, error_message=pr_response), 400
 
 
 @app.route('/cad/<category>')

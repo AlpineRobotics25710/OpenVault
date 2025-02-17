@@ -18,9 +18,32 @@
         </div>
     </header>
 
-    {% if submitted %}
-        <h1>Your Submission Has Been Recorded!</h1>
-        <h3>Thank you for submitting to OpenVault and contributing to the FTC Community!</h3>
+    {% if error %}
+        <div class="container text-center mt-5">
+            <div class="card shadow-lg p-4 border-0">
+                <h1 class="text-danger fw-bold display-5">Oops! Something Went Wrong</h1>
+                <p class="text-muted fs-5 mt-3">We encountered an error while processing your request.</p>
+
+                <div class="alert alert-warning mt-4 p-3 text-start shadow-sm">
+                    <h5 class="fw-bold">Error Details:</h5>
+                    <pre class="bg-light text-dark p-3 rounded border">{{ error_message }}</pre>
+                </div>
+
+                <p class="text-muted fs-6 mt-4">
+                    Please take a screenshot of or copy this message and notify a moderator in the Discord server.
+                    We sincerely apologize for the inconvenience and will work quickly to resolve the issue.
+                </p>
+            </div>
+        </div>
+    {% elif submitted %}
+        <div class="container text-center mt-5">
+            <div class="card shadow-lg p-4 border-0">
+                <h1 class="text-success fw-bold">Your Submission Has Been Recorded!</h1>
+                <h3 class="text-muted mt-3">
+                    Thank you for submitting to <span class="fw-bold">OpenVault</span> and contributing to the FTC Community! 🚀
+                </h3>
+            </div>
+        </div>
     {% else %}
         <form action="/submit-pr" onsubmit="return validateForm()" method="POST" enctype="multipart/form-data">
             <div class="contribute-container">

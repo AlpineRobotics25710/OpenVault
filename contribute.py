@@ -79,4 +79,4 @@ def create_pull_request(title, body, branch_name, base="main"):
     if pr_response.status_code != 201:
         return {"error": "Failed to create PR", "details": pr_response.json()}
 
-    return {"message": "Pull request created successfully", "pr_url": pr_response.json().get("html_url")}
+    return True
