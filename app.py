@@ -142,8 +142,8 @@ def submit_pr():
             preview_file_path = f"ftc/code/{code_subcategory}/{branch_name}"
         elif category == "Portfolios":
             preview_file_path = f"ftc/portfolios/portfolios/{branch_name}"
-        elif category == "Cad":
-            preview_file_path = f"ftc/cad/{cad_subcategory}/{branch_name}/"
+        elif category == "CAD":
+            preview_file_path = f"ftc/cad/{cad_subcategory}/{branch_name}"
         preview_filename = f"{preview_file_path}/{preview_file.filename}"
         preview_content = preview_file.read()
         file_response = create_file(preview_filename, base64.b64encode(preview_content).decode("utf-8"), branch_name)
@@ -158,12 +158,13 @@ def submit_pr():
         filename = f"ftc/code/{code_subcategory}/{branch_name}/{file.filename}"
     elif category == "Portfolios":
         file = request.files.get("portfolioUpload")
-        filename = f"ftc/portfolios/{portfolios}/{branch_name}/{file.filename}"
+        filename = f"ftc/portfolios/portfolios/{branch_name}/{file.filename}"
 
-    file_content = file.read()
-    file_response = create_file(filename, base64.b64encode(file_content).decode("utf-8"), branch_name)
-    if "error" in file_response:
-        return jsonify(file_response), 400
+    if file:
+        file_content = file.read()
+        file_response = create_file(filename, base64.b64encode(file_content).decode("utf-8"), branch_name)
+        if "error" in file_response:
+            return jsonify(file_response), 400
 
     # Step 5: Create the info.json file
     # Do not change this formatting, it needs to be formatted like this
@@ -188,16 +189,16 @@ def submit_pr():
         info_file_path = f"ftc/portfolios/portfolios/{branch_name}/info.json"
         info_data.update({
             "file-name": file.filename,
+            "years-used": request.form.get("yearsUsed"),
             "awards-won": request.form.get("awardsWon"),
         })
-    elif category == "Cad":
+    elif category == "CAD":
         info_file_path = f"ftc/cad/{cad_subcategory}/{branch_name}/info.json"
         info_data.update({
             "used-in-comp": True if request.form.get("usedInCompCAD") == "on" else False,
-            "onshape-link": request.form.get("onshape-link"),
+            "years-used": request.form.get("yearsUsed"),
+            "onshape-link": request.form.get("onshapeLink"),
         })
-
-
 
     # Convert to JSON and encode it
     info_content = json.dumps(info_data, indent=4)
