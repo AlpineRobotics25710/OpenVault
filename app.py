@@ -166,25 +166,38 @@ def submit_pr():
         return jsonify(file_response), 400
 
     # Step 5: Create the info.json file
-    if category == "Code":
-        info_file_path = f"ftc/code/{code_subcategory}/{branch_name}/info.json"
-    elif category == "Portfolios":
-        info_file_path = f"ftc/portfolios/portfolios/{branch_name}/info.json"
-    elif category == "Cad":
-        info_file_path = f"ftc/cad/{cad_subcategory}/{branch_name}/info.json"
-
     # Do not change this formatting, it needs to be formatted like this
     info_data = {
         "preview-image-name": preview_file.filename,
-        "download-name": file.filename,  # Updated to use the uploaded file's name
         "title": title,
         "author": author,
         "description": description,
-        "used-in-comp": request.form.get("used-in-comp"),
         "team-number": team_number,
-        "years-used": request.form.get("years-used"),
-        "language": request.form.get("language")
     }
+
+    info_file_path = None
+    if category == "Code":
+        info_file_path = f"ftc/code/{code_subcategory}/{branch_name}/info.json"
+        info_data.update({
+            "download-name": file.filename,
+            "used-in-comp": True if request.form.get("usedInCompCode") == "on" else False,
+            "years-used": request.form.get("yearsUsed"),
+            "language": request.form.get("languageUsed"),
+        })
+    elif category == "Portfolios":
+        info_file_path = f"ftc/portfolios/portfolios/{branch_name}/info.json"
+        info_data.update({
+            "file-name": file.filename,
+            "awards-won": request.form.get("awardsWon"),
+        })
+    elif category == "Cad":
+        info_file_path = f"ftc/cad/{cad_subcategory}/{branch_name}/info.json"
+        info_data.update({
+            "used-in-comp": True if request.form.get("usedInCompCAD") == "on" else False,
+            "onshape-link": request.form.get("onshape-link"),
+        })
+
+
 
     # Convert to JSON and encode it
     info_content = json.dumps(info_data, indent=4)
