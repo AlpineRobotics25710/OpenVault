@@ -42,11 +42,20 @@
                 <h3 class="text-muted mt-3">
                     Thank you for submitting to <span class="fw-bold">OpenVault</span> and contributing to the FTC Community! 🚀
                 </h3>
+                <h4 class="text-muted mt-3">
+                    Please give us up to one week to review your submission. You will be notified of any problems through email.
+                </h4>
             </div>
         </div>
     {% else %}
         <form action="/submit-pr" onsubmit="return validateForm()" method="POST" enctype="multipart/form-data">
             <div class="contribute-container">
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+
                 <!-- Category Selection -->
                 <div class="mb-3">
                     <label for="category" class="form-label">Category</label>
@@ -169,7 +178,7 @@
 
                 <!-- Submit Button -->
                 <div class="mb-3">
-                    <button type="submit" class="btn btn-primary w-100">Submit</button>
+                    <button type="submit" class="btn btn-success w-100">Submit</button>
                 </div>
             </div>
         </form>

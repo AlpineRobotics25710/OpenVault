@@ -115,6 +115,7 @@ def submit_pr():
     """Handles form submission and creates a PR."""
 
     # Step 1: Validate input fields
+    email = request.form.get("email")
     team_number = request.form.get("teamNumber")
     title = request.form.get("title")
     author = request.form.get("author")
@@ -123,7 +124,7 @@ def submit_pr():
     cad_subcategory = request.form.get("cadSubcategory")
     code_subcategory = request.form.get("codeSubcategory")
 
-    if not team_number or not title or not category:
+    if not team_number or not title or not category or not email:
         return render_template("ftc/contribute.html", error=True, error_message={"error": "Missing required fields"}), 400
 
     # Generate branch name
@@ -174,6 +175,7 @@ def submit_pr():
         "author": author,
         "description": description,
         "team-number": team_number,
+        "email": email,
     }
 
     info_file_path = None
