@@ -1,7 +1,7 @@
 import requests
 
 # Expires in a year. Keep secret.
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = "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"
 OWNER = "AlpineRobotics25710"
 REPO = "OpenVaultFiles"
 BRANCH_NAME = "if-this-is-the-name-that-means-somethings-wrong"
