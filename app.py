@@ -1,12 +1,10 @@
 import base64
-import uuid
 import json
 
-import requests
-from bs4 import BeautifulSoup
-from flask import Flask, render_template, request, session, jsonify
-from requests import JSONDecodeError
+from flask import Flask, render_template, request, session
+
 from contribute import create_pull_request, create_file, create_branch
+from util import fetch_data_from_github, build_index
 
 app = Flask(__name__)
 app.secret_key = "779650ac697181207529db19091dc55b93aa47a70ffbbe52d9cb8330c7b9ed4f"
@@ -19,83 +17,32 @@ def inject_active_route():
     return {'active_route': session["curr_template"]}
 
 
-# Generic function to fetch data from GitHub
-def fetch_data_from_github(section, sub_section):
-    base_url = "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc"
-    github_page = requests.get(
-        f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
-    session["records"] = []
-
-    if github_page.status_code == 200:
-        soup = BeautifulSoup(github_page.content, "html.parser")
-        unique_titles = set()
-        links = [subfolder for subfolder in soup.find_all("a", class_="Link--primary") if
-                 subfolder.get("title") not in unique_titles and not unique_titles.add(
-                     subfolder.get("title")) and "filler" not in subfolder.get("title")]
-
-        for subfolder in links:
-            post_info = requests.get(f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/info.json")
-            if post_info.status_code == 200:
-                try:
-                    post_info_json = post_info.json()
-                except JSONDecodeError:
-                    continue
-
-                record = {"uuid": str(uuid.uuid4()),
-                          "preview_image_url": f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['preview-image-name']}",
-                          "title": post_info_json["title"], "author": post_info_json["author"],
-                          "description": post_info_json["description"], "team_number": post_info_json["team-number"],
-                          "years_used": post_info_json["years-used"], }
-
-                if section == "code":
-                    record[
-                        "download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['download-name']}"
-                    record["language"] = post_info_json["language"]
-                    record["used_in_comp"] = post_info_json["used-in-comp"]
-                elif section == "portfolios":
-                    record[
-                        "download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['file-name']}"
-                    record["awards_won"] = post_info_json["awards-won"]
-                elif section == "cad":
-                    record["used_in_comp"] = post_info_json["used-in-comp"]
-                    record["onshape_link"] = post_info_json["onshape-link"]
-
-                session["records"].append(record)
-
-    return session["records"]
-
-
 @app.route('/search', methods=["POST"])
 def search():
-    if "curr_template" not in session:
+    if "curr_template" not in session or "records" not in session:
         return index()
-
-    if "records" not in session or session["records"] == []:
-        return render_template(session["curr_template"], records=session["records"])
 
     curr_template = session["curr_template"]
     records = session["records"]
-    # print("curr template:" + curr_template)
-    # print("records:" + str(records))
-    if request.method == "POST":
-        search_query = request.form.get("searchBox")
-        if search_query == "":
-            return render_template(curr_template, records=records)
-        if search_query:
-            search_query = search_query.lower()
-            # print("search query:" + search_query)
-            # print(records)
-            filtered_records = []
-            for record in records:
-                if (search_query in record["title"].lower() or search_query in record[
-                    "author"].lower() or search_query in record["description"].lower() or search_query in record[
-                    "team_number"].lower() or search_query in record["years_used"].lower() or (
-                        "code" in curr_template and search_query in record["language"].lower()) or (
-                        "portfolios" in curr_template and search_query in record["awards_won"].lower())):
-                    filtered_records.append(record)
-            return render_template(curr_template, records=filtered_records)
+    search_query = request.form.get("searchBox", "").strip().lower()
 
-    return render_template(curr_template, records=records)
+    if not search_query:
+        return render_template(curr_template, records=records)
+
+    # Use the pre-built index
+    index = session.get("index", {})
+    results = set()
+
+    # Search each word separately
+    for word in search_query.split():
+        if word in index:
+            # Store the UUIDs instead of the whole record in the set
+            results.update(record['uuid'] for record in index[word])
+
+    # Filter records by UUIDs
+    filtered_records = [record for record in records if record['uuid'] in results]
+
+    return render_template(curr_template, records=filtered_records)
 
 
 @app.route('/')
@@ -125,7 +72,8 @@ def submit_pr():
     code_subcategory = request.form.get("codeSubcategory")
 
     if not team_number or not title or not category or not email:
-        return render_template("ftc/contribute.html", error=True, error_message={"error": "Missing required fields"}), 400
+        return render_template("ftc/contribute.html", error=True,
+                               error_message={"error": "Missing required fields"}), 400
 
     # Generate branch name
     branch_name = f"{team_number}-{title.replace(' ', '_')}"
