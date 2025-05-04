@@ -26,6 +26,17 @@
         <div class="container px-4 px-lg-5 mt-5">
             {% if records %}
                 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    {% if "error" in records %}
+                        <div class="col mb-5">
+                            <div class="card h-100">
+                                <div class="card-body p-4">
+                                    <div class="text-center">
+                                        <h5 class="fw-bolder">Error: {{ records.error }} Please contact the moderators in the server to resolve this issue.</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
                     {% for record in records %}
                         <div class="col mb-5">
                             <div class="card h-100">
@@ -91,7 +102,7 @@
                                                                  class="img-fluid d-block mx-auto" alt="preview-image">
                                                         </div>
                                                         <div class="text-center" style="padding: 1rem; height: 6rem;">
-                                                            <a href="{{ record.onshape_link }}">
+                                                            <a href="{{ record.onshape_link }}" target="_blank">
                                                                 <img class="btn btn-outline-success mt-auto"
                                                                      style="margin: 0"
                                                                      src="{{ url_for('static', filename='/images/onshape-logo.png') }}"
@@ -108,6 +119,7 @@
                             </div>
                         </div>
                     {% endfor %}
+                    {% endif %}
                 </div>
             {% else %}
                 <!-- No results found -->

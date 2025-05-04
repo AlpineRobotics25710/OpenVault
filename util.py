@@ -1,8 +1,9 @@
 import uuid
+import json
 
 import requests
 from bs4 import BeautifulSoup
-from flask import session
+from flask import jsonify, session
 from requests import JSONDecodeError
 
 
@@ -32,55 +33,60 @@ def build_index(records):
 
 def fetch_data_from_github(section, sub_section):
     base_url = "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc"
-    github_page = requests.get(
-        f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
-
-    session["records"] = []
-
+    github_page = requests.get(f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
+    
+    records = []
     if github_page.status_code == 200:
-        soup = BeautifulSoup(github_page.content, "html.parser")
-        unique_titles = set()
-        links = [subfolder for subfolder in soup.find_all("a", class_="Link--primary") if
-                 subfolder.get("title") not in unique_titles and not unique_titles.add(
-                     subfolder.get("title")) and "filler" not in subfolder.get("title")]
+        soup = BeautifulSoup(github_page.text, "html.parser")
+        script_tag = soup.find("script", {"type": "application/json", "data-target": "react-app.embeddedData"})
+        
+        if script_tag:
+            try:
+                # Parse the JSON content from the script tag
+                embedded_data = json.loads(script_tag.string)
+                entries = embedded_data.get("payload", {}).get("tree", {}).get("items", [])
+                
+                for entry in entries:
+                    # Skip entries with "filler" in their name
+                    if "filler" not in entry.get("name", ""):
+                        post_info = requests.get(f"{base_url}/{section}/{sub_section}/{entry['name']}/info.json")
+                        
+                        if post_info.status_code == 200:
+                            try:
+                                post_info_json = post_info.json()
+                            except JSONDecodeError:
+                                continue
 
-        for subfolder in links:
-            post_info = requests.get(f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/info.json")
+                            # Build the record based on the section type
+                            record = {
+                                "uuid": str(uuid.uuid4()),
+                                "preview_image_url": f"{base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['preview-image-name']}",
+                                "title": post_info_json["title"],
+                                "author": post_info_json["author"],
+                                "description": post_info_json["description"],
+                                "team_number": post_info_json["team-number"],
+                                "years_used": post_info_json["years-used"],
+                            }
 
-            if post_info.status_code == 200:
-                try:
-                    post_info_json = post_info.json()
-                except JSONDecodeError:
-                    continue
+                            if section == "code":
+                                record["download_url"] = f"{base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['download-name']}"
+                                record["language"] = post_info_json["language"]
+                                record["used_in_comp"] = post_info_json["used-in-comp"]
 
-                record = {
-                    "uuid": str(uuid.uuid4()),
-                    "preview_image_url": f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['preview-image-name']}",
-                    "title": post_info_json["title"],
-                    "author": post_info_json["author"],
-                    "description": post_info_json["description"],
-                    "team_number": post_info_json["team-number"],
-                    "years_used": post_info_json["years-used"],
-                }
+                            elif section == "portfolios":
+                                record["download_url"] = f"{base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['file-name']}"
+                                record["awards_won"] = post_info_json["awards-won"]
 
-                if section == "code":
-                    record[
-                        "download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['download-name']}"
-                    record["language"] = post_info_json["language"]
-                    record["used_in_comp"] = post_info_json["used-in-comp"]
+                            elif section == "cad":
+                                record["used_in_comp"] = post_info_json["used-in-comp"]
+                                record["onshape_link"] = post_info_json["onshape-link"]
+                            
+                            records.append(record)
 
-                elif section == "portfolios":
-                    record[
-                        "download_url"] = f"{base_url}/{section}/{sub_section}/{subfolder.get('title')}/{post_info_json['file-name']}"
-                    record["awards_won"] = post_info_json["awards-won"]
+                # Build the index for efficient search
+                session["index"] = build_index(records)
 
-                elif section == "cad":
-                    record["used_in_comp"] = post_info_json["used-in-comp"]
-                    record["onshape_link"] = post_info_json["onshape-link"]
-
-                session["records"].append(record)
-
-        # Build the index for efficient search
-        session["index"] = build_index(session["records"])
-
-    return session["records"]
+            except (JSONDecodeError, KeyError):
+                return { "error": "Failed to parse embedded JSON data." }
+    
+    return records
