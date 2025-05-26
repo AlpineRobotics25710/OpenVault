@@ -3,32 +3,60 @@ import json
 
 import requests
 from bs4 import BeautifulSoup
-from flask import jsonify, session
+from flask import session
 from requests import JSONDecodeError
+import numpy as np
+import faiss
 
+vocab = {}
+search_index = None
+record_embeddings = None 
 
 def build_index(records):
-    index = {}
+    global vocab, search_index, record_embeddings
 
+    texts = []
     for record in records:
         fields = [
-            record.get("title", "").lower(),
-            record.get("author", "").lower(),
-            record.get("description", "").lower(),
-            record.get("team_number", "").lower(),
-            record.get("years_used", "").lower(),
-            record.get("language", "").lower() if "language" in record else "",
-            record.get("awards_won", "").lower() if "awards_won" in record else "",
+            record.get("title", ""),
+            record.get("author", ""),
+            record.get("description", ""),
+            record.get("team_number", ""),
+            record.get("years_used", ""),
+            record.get("language", "") if "language" in record else "",
+            record.get("awards_won", "") if "awards_won" in record else "",
         ]
+        texts.append(" ".join(fields).lower())
 
-        # Add each word in the fields to the index
-        for field in fields:
-            for word in field.split():
-                if word not in index:
-                    index[word] = []
-                index[word].append(record)
+    vocab = {}
+    for text in texts:
+        for word in text.split():
+            if word not in vocab:
+                vocab[word] = len(vocab)
+    dim = len(vocab)
 
-    return index
+    embeddings = np.zeros((len(texts), dim), dtype='float32')
+    for i, text in enumerate(texts):
+        for word in text.split():
+            if word in vocab:
+                embeddings[i, vocab[word]] += 1.0
+    record_embeddings = embeddings  # Save for later use
+
+    index = faiss.IndexFlatL2(dim)
+    index.add(embeddings)
+    assert index.is_trained, "Index is not trained. Check the embeddings."
+    search_index = index
+    return {"index": search_index, "records": records, "vocab": vocab}
+
+def embed_text(text):
+    """Embed a query string into the same vector space as the index."""
+    global vocab
+    dim = len(vocab)
+    vec = np.zeros((dim,), dtype='float32')
+    for word in text.lower().split():
+        if word in vocab:
+            vec[vocab[word]] += 1.0
+    return vec
 
 
 def fetch_data_from_github(section, sub_section):
@@ -84,7 +112,7 @@ def fetch_data_from_github(section, sub_section):
                             records.append(record)
 
                 # Build the index for efficient search
-                session["index"] = build_index(records)
+                build_index(records)
 
             except (JSONDecodeError, KeyError):
                 return { "error": "Failed to parse embedded JSON data." }

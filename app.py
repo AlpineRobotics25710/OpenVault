@@ -4,7 +4,12 @@ import json
 from flask import Flask, render_template, request, session
 
 from contribute import create_pull_request, create_file, create_branch
-from util import fetch_data_from_github, build_index
+from util import fetch_data_from_github, embed_text, record_embeddings
+import numpy as np
+
+# TODO: Add filters
+# TODO: Record the date posted and sort posts by date
+# TODO: Instead of making HTTP requests to GitHub, use the GitHub API to fetch data
 
 app = Flask(__name__)
 app.secret_key = "779650ac697181207529db19091dc55b93aa47a70ffbbe52d9cb8330c7b9ed4f"
@@ -22,25 +27,34 @@ def search():
     if "curr_template" not in session or "records" not in session:
         return index()
 
-    curr_template = session["curr_template"]
-    records = session["records"]
-    search_query = request.form.get("searchBox", "").strip().lower()
+    curr_template = session.get("curr_template")
+    records = session.get("records")
+    search_query = request.form.get("searchBox", "").strip()
 
-    if not search_query:
-        return render_template(curr_template, records=records)
+    from util import record_embeddings  # ensure you get the latest value
 
-    # Use the pre-built index
-    index = session.get("index", {})
-    results = set()
+    filtered_records = []
+    if (
+        search_query
+        and len(records) > 0
+        and record_embeddings is not None
+    ):
+        query_vector = embed_text(search_query)
+        query_norm = np.linalg.norm(query_vector)
+        embeddings_norm = np.linalg.norm(record_embeddings, axis=1)
+        valid = (query_norm > 0) & (embeddings_norm > 0)
+        similarities = np.zeros(len(records))
+        if query_norm > 0:
+            similarities[valid] = (record_embeddings[valid] @ query_vector) / (embeddings_norm[valid] * query_norm)
+        
+        threshold = 0
 
-    # Search each word separately
-    for word in search_query.split():
-        if word in index:
-            # Store the UUIDs instead of the whole record in the set
-            results.update(record['uuid'] for record in index[word])
-
-    # Filter records by UUIDs
-    filtered_records = [record for record in records if record['uuid'] in results]
+        # Sort by decreasing similarity
+        indices = [i for i, sim in enumerate(similarities) if sim > threshold]
+        sorted_indices = sorted(indices, key=lambda i: similarities[i], reverse=True)
+        filtered_records = [records[i] for i in sorted_indices]
+    else:
+        filtered_records = records
 
     return render_template(curr_template, records=filtered_records)
 
