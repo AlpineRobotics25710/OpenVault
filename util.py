@@ -1,18 +1,18 @@
+import pickle
 import uuid
-import json
+from json.decoder import JSONDecodeError
 
-import requests
-from bs4 import BeautifulSoup
-from flask import session
-from requests import JSONDecodeError
-import numpy as np
 import faiss
+import numpy as np
+import requests
+from requests import JSONDecodeError
 
 vocab = {}
 search_index = None
-record_embeddings = None 
+record_embeddings = None
 
-def build_index(records):
+
+def build_index(records, index_file="search_index.faiss", meta_file="index_meta.pkl"):
     global vocab, search_index, record_embeddings
 
     texts = []
@@ -23,11 +23,12 @@ def build_index(records):
             record.get("description", ""),
             record.get("team_number", ""),
             record.get("years_used", ""),
-            record.get("language", "") if "language" in record else "",
-            record.get("awards_won", "") if "awards_won" in record else "",
+            record.get("language", ""),
+            record.get("awards_won", ""),
         ]
         texts.append(" ".join(fields).lower())
 
+    # Build vocab
     vocab = {}
     for text in texts:
         for word in text.split():
@@ -35,86 +36,112 @@ def build_index(records):
                 vocab[word] = len(vocab)
     dim = len(vocab)
 
+    # Generate bag-of-words embeddings
     embeddings = np.zeros((len(texts), dim), dtype='float32')
     for i, text in enumerate(texts):
         for word in text.split():
             if word in vocab:
                 embeddings[i, vocab[word]] += 1.0
-    record_embeddings = embeddings  # Save for later use
 
-    index = faiss.IndexFlatL2(dim)
+    # Normalize embeddings
+    norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+    norms[norms == 0] = 1e-10
+    embeddings = embeddings / norms
+    record_embeddings = embeddings
+
+    # Build and save FAISS index
+    index = faiss.IndexFlatIP(dim)
     index.add(embeddings)
-    assert index.is_trained, "Index is not trained. Check the embeddings."
+    faiss.write_index(index, index_file)
+
+    # Save vocab and embeddings metadata
+    with open(meta_file, "wb") as f:
+        pickle.dump({
+            "vocab": vocab,
+            "record_embeddings": record_embeddings,
+            "records": records
+        }, f)
+
+    # Assign globals
     search_index = index
     return {"index": search_index, "records": records, "vocab": vocab}
 
-def embed_text(text):
-    """Embed a query string into the same vector space as the index."""
-    global vocab
-    dim = len(vocab)
-    vec = np.zeros((dim,), dtype='float32')
+
+def embed_text(text, vocab):
+    vector = np.zeros(len(vocab), dtype='float32')
     for word in text.lower().split():
         if word in vocab:
-            vec[vocab[word]] += 1.0
-    return vec
+            vector[vocab[word]] += 1.0
+    norm = np.linalg.norm(vector)
+    if norm > 0:
+        vector /= norm
+    return vector
+
+
+def load_index(index_file="search_index.faiss", meta_file="index_meta.pkl"):
+    search_index = faiss.read_index(index_file)
+
+    with open(meta_file, "rb") as f:
+        data = pickle.load(f)
+
+    return {
+        "search_index": search_index,
+        "record_embeddings": data["record_embeddings"],
+        "vocab": data["vocab"]
+    }
 
 
 def fetch_data_from_github(section, sub_section):
-    base_url = "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/refs/heads/main/ftc"
-    github_page = requests.get(f"https://github.com/AlpineRobotics25710/OpenVaultFiles/tree/main/ftc/{section}/{sub_section}")
-    
+    api_url = f"https://api.github.com/repos/AlpineRobotics25710/OpenVaultFiles/contents/ftc/{section}/{sub_section}"
+    raw_base_url = "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/main/ftc"
+
     records = []
-    if github_page.status_code == 200:
-        soup = BeautifulSoup(github_page.text, "html.parser")
-        script_tag = soup.find("script", {"type": "application/json", "data-target": "react-app.embeddedData"})
-        
-        if script_tag:
-            try:
-                # Parse the JSON content from the script tag
-                embedded_data = json.loads(script_tag.string)
-                entries = embedded_data.get("payload", {}).get("tree", {}).get("items", [])
-                
-                for entry in entries:
-                    # Skip entries with "filler" in their name
-                    if "filler" not in entry.get("name", ""):
-                        post_info = requests.get(f"{base_url}/{section}/{sub_section}/{entry['name']}/info.json")
-                        
-                        if post_info.status_code == 200:
-                            try:
-                                post_info_json = post_info.json()
-                            except JSONDecodeError:
-                                continue
+    response = requests.get(api_url)
 
-                            # Build the record based on the section type
-                            record = {
-                                "uuid": str(uuid.uuid4()),
-                                "preview_image_url": f"{base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['preview-image-name']}",
-                                "title": post_info_json["title"],
-                                "author": post_info_json["author"],
-                                "description": post_info_json["description"],
-                                "team_number": post_info_json["team-number"],
-                                "years_used": post_info_json["years-used"],
-                            }
+    if response.status_code == 200:
+        try:
+            entries = response.json()
+        except JSONDecodeError:
+            return {"error": "Failed to decode GitHub API response."}
 
-                            if section == "code":
-                                record["download_url"] = f"{base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['download-name']}"
-                                record["language"] = post_info_json["language"]
-                                record["used_in_comp"] = post_info_json["used-in-comp"]
+        for entry in entries:
+            if entry["type"] == "dir" and "filler" not in entry["name"]:
+                info_url = f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/info.json"
+                post_info_resp = requests.get(info_url)
 
-                            elif section == "portfolios":
-                                record["download_url"] = f"{base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['file-name']}"
-                                record["awards_won"] = post_info_json["awards-won"]
+                if post_info_resp.status_code == 200:
+                    try:
+                        post_info_json = post_info_resp.json()
+                    except JSONDecodeError:
+                        continue
 
-                            elif section == "cad":
-                                record["used_in_comp"] = post_info_json["used-in-comp"]
-                                record["onshape_link"] = post_info_json["onshape-link"]
-                            
-                            records.append(record)
+                    record = {
+                        "uuid": str(uuid.uuid4()),
+                        "preview_image_url": f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['preview-image-name']}",
+                        "title": post_info_json["title"],
+                        "author": post_info_json["author"],
+                        "description": post_info_json["description"],
+                        "team_number": post_info_json["team-number"],
+                        "years_used": post_info_json["years-used"],
+                    }
 
-                # Build the index for efficient search
-                build_index(records)
+                    if section == "code":
+                        record[
+                            "download_url"] = f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['download-name']}"
+                        record["language"] = post_info_json["language"]
+                        record["used_in_comp"] = post_info_json["used-in-comp"]
 
-            except (JSONDecodeError, KeyError):
-                return { "error": "Failed to parse embedded JSON data." }
-    
+                    elif section == "portfolios":
+                        record[
+                            "download_url"] = f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['file-name']}"
+                        record["awards_won"] = post_info_json["awards-won"]
+
+                    elif section == "cad":
+                        record["used_in_comp"] = post_info_json["used-in-comp"]
+                        record["onshape_link"] = post_info_json["onshape-link"]
+
+                    records.append(record)
+    else:
+        return {"error": f"GitHub API returned status {response.status_code}"}
+
     return records

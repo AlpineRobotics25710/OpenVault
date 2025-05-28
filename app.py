@@ -1,15 +1,14 @@
 import base64
 import json
 
-from flask import Flask, render_template, request, session
+import numpy as np
+from flask import Flask, render_template, request, redirect, url_for, session
 
 from contribute import create_pull_request, create_file, create_branch
-from util import fetch_data_from_github, embed_text, record_embeddings
-import numpy as np
+from util import fetch_data_from_github, embed_text, build_index, load_index
 
 # TODO: Add filters
 # TODO: Record the date posted and sort posts by date
-# TODO: Instead of making HTTP requests to GitHub, use the GitHub API to fetch data
 
 app = Flask(__name__)
 app.secret_key = "779650ac697181207529db19091dc55b93aa47a70ffbbe52d9cb8330c7b9ed4f"
@@ -22,43 +21,6 @@ def inject_active_route():
     return {'active_route': session["curr_template"]}
 
 
-@app.route('/search', methods=["POST"])
-def search():
-    if "curr_template" not in session or "records" not in session:
-        return index()
-
-    curr_template = session.get("curr_template")
-    records = session.get("records")
-    search_query = request.form.get("searchBox", "").strip()
-
-    from util import record_embeddings  # ensure you get the latest value
-
-    filtered_records = []
-    if (
-        search_query
-        and len(records) > 0
-        and record_embeddings is not None
-    ):
-        query_vector = embed_text(search_query)
-        query_norm = np.linalg.norm(query_vector)
-        embeddings_norm = np.linalg.norm(record_embeddings, axis=1)
-        valid = (query_norm > 0) & (embeddings_norm > 0)
-        similarities = np.zeros(len(records))
-        if query_norm > 0:
-            similarities[valid] = (record_embeddings[valid] @ query_vector) / (embeddings_norm[valid] * query_norm)
-        
-        threshold = 0
-
-        # Sort by decreasing similarity
-        indices = [i for i, sim in enumerate(similarities) if sim > threshold]
-        sorted_indices = sorted(indices, key=lambda i: similarities[i], reverse=True)
-        filtered_records = [records[i] for i in sorted_indices]
-    else:
-        filtered_records = records
-
-    return render_template(curr_template, records=filtered_records)
-
-
 @app.route('/')
 def index():
     session["curr_template"] = "ftc/index.html"
@@ -69,6 +31,67 @@ def index():
 def contribute():
     session["curr_template"] = "ftc/contribute.html"
     return render_template("ftc/contribute.html", submitted=False)
+
+
+@app.route('/<base>/<category>')
+def render_page(base, category):
+    session["records"] = fetch_data_from_github(base, category)
+    session["curr_template"] = f"ftc/{base}/{category}.html"
+    build_index(session.get("records"))
+    return render_template(session.get("curr_template"), records=session.get("records"))
+
+
+# For legacy purposes/ease of use. You can access portfolios through /portfolios/portfolios
+@app.route('/portfolios')
+def portfolios():
+    return redirect(url_for("render_page", base="portfolios", category="portfolios"))
+
+
+@app.route('/search', methods=["GET", "POST"])
+def search():
+    #print("Search function was called")
+
+    if request.method == "GET":
+        return redirect(url_for("index"))
+
+    if "curr_template" not in session or "records" not in session:
+        return redirect(url_for("index"))
+
+    curr_template = session.get("curr_template")
+    records = session.get("records")
+    search_query = request.form.get("searchBox", "").strip()
+
+    # Load index and metadata from files
+    index_data = load_index()  # loads vocab, search_index, record_embeddings
+    search_index = index_data["search_index"]
+    record_embeddings = index_data["record_embeddings"]
+    vocab = index_data["vocab"]
+
+    # print("Search query is: ", search_query)
+    # print("search index is: ", search_index)
+    # print("record embedding shape is: ", record_embeddings.shape)
+    # print("vocab size is: ", len(vocab))
+
+    filtered_records = []
+    if not search_query:
+        filtered_records = records
+        #print("search query is empty")
+    elif len(records) > 0 and record_embeddings is not None and search_index is not None:
+        query_vector = embed_text(search_query, vocab)
+        #print("Processed query vector.")
+
+        if np.linalg.norm(query_vector) > 0:
+            D, I = search_index.search(np.array([query_vector]).astype('float32'), k=len(records))
+            indices = I[0]
+            similarities = D[0]
+            #print("similarities: " + str(similarities))
+
+            threshold = 0.00
+            filtered = [(i, sim) for i, sim in zip(indices, similarities) if sim > threshold]
+            sorted_filtered = sorted(filtered, key=lambda x: x[1], reverse=True)
+            filtered_records = [records[i] for i, _ in sorted_filtered]
+
+    return render_template(curr_template, records=filtered_records)
 
 
 @app.route("/submit-pr", methods=["POST"])
@@ -185,27 +208,6 @@ def submit_pr():
         return render_template("ftc/contribute.html", submitted=True)
     else:
         return render_template("ftc/contribute.html", error=True, error_message=pr_response), 400
-
-
-@app.route('/cad/<category>')
-def render_cad_page(category):
-    session["records"] = fetch_data_from_github("cad", category)
-    session["curr_template"] = f"ftc/cad/{category}.html"
-    return render_template(session["curr_template"], records=session["records"])
-
-
-@app.route('/code/<category>')
-def render_code_page(category):
-    session["records"] = fetch_data_from_github("code", category)
-    session["curr_template"] = f"ftc/code/{category}.html"
-    return render_template(session["curr_template"], records=session["records"])
-
-
-@app.route('/portfolios')
-def portfolios():
-    session["records"] = fetch_data_from_github("portfolios", "portfolios")
-    session["curr_template"] = "ftc/portfolios/portfolios.html"
-    return render_template(session["curr_template"], records=session["records"])
 
 
 if __name__ == '__main__':
