@@ -2,8 +2,8 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-from github import Auth
-from github import Github
+#from github import Auth
+#from github import Github
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from contribute import submit_pr
@@ -17,8 +17,8 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
-auth = Auth.Token(os.getenv("GITHUB_TOKEN"))
-github = Github(auth=auth)
+#auth = Auth.Token(os.getenv("GITHUB_TOKEN"))
+#github = Github(auth=auth)
 
 reduced_vectors = None
 tfidf_vectorizer = TfidfVectorizer()
