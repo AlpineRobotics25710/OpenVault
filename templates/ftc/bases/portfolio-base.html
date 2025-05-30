@@ -12,7 +12,7 @@
     <div class="bg-light sticky-top py-2 border rounded" style="margin: 10px;">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <form class="d-flex w-100" role="search" action="/search" method="POST" id="searchForm">
+                <form class="d-flex w-100" id="searchForm">
                     <input class="form-control me-2 flex-grow-1" type="search" name="searchBox" id="searchBox" placeholder="Search by title, number, description, anything..." aria-label="Search">
                     <button class="btn btn-success me-2" type="submit">Search</button>
                     <button class="btn btn-secondary " type="button" id="clearSearchButton" onclick="clearSearch()">Clear</button>
@@ -127,4 +127,6 @@
             {% endif %}
         </div>
     </section>
+
+    <script src="{{ url_for('static', filename='/javascript/search.js') }}"></script>
 {% endblock %}
