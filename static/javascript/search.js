@@ -32,7 +32,7 @@ async function performSearch(query) {
 function setupFormHandler() {
     const form = document.getElementById('searchForm');
     if (!form) {
-        console.error("Form with id 'searchForm' not found!");
+        //console.error("Form with id 'searchForm' not found!");
         return;
     }
 
