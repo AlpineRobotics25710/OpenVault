@@ -75,22 +75,22 @@ def search_api():
         return jsonify({"template": render_template(session.get("curr_template"), records=records)}), 200
 
 
-    print(f"Search query: {search_query}")
+    #print(f"Search query: {search_query}")
     # print("tfidf_matrix:", tfidf_matrix)
 
     if not search_query or tfidf_matrix is None:
         return jsonify({"records": records})
 
     similarities, _ = search(search_query, idf, vocab, tfidf_matrix)
-    print("Similarities:", similarities)
+    #print("Similarities:", similarities)
 
     threshold = 0.01
     filtered = [(i, sim) for i, sim in enumerate(similarities) if sim >= threshold]
     filtered = sorted(filtered, key=lambda x: x[1], reverse=True)
     filtered_records = [records[i] for i, _ in filtered]
 
-    print("Top Similarities:", sorted(similarities, reverse=True)[:5])
-    print("Filtered Indices:", [i for i, sim in filtered])
+    #print("Top Similarities:", sorted(similarities, reverse=True)[:5])
+    #print("Filtered Indices:", [i for i, sim in filtered])
 
     rendered_template = render_template(session.get("curr_template"), records=filtered_records)
 
