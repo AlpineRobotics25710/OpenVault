@@ -45,7 +45,7 @@ function setupFormHandler() {
 
 function clearSearch() {
     document.getElementById("searchBox").value = ""; // Clear input
-    document.getElementById("searchForm").submit();
+    performSearch(""); // Perform search with empty query to clear results
 }
 
 document.addEventListener('DOMContentLoaded', setupFormHandler);
