@@ -13,102 +13,115 @@
         <div class="container-fluid">
             <div class="d-flex align-items-center">
                 <form class="d-flex w-100" id="searchForm">
-                    <input class="form-control me-2 flex-grow-1" type="search" name="searchBox" id="searchBox" placeholder="Search by title, number, description, anything..." aria-label="Search">
+                    <input class="form-control me-2 flex-grow-1" type="search" name="searchBox" id="searchBox"
+                           placeholder="Search by title, number, description, anything..." aria-label="Search">
                     <button class="btn btn-success me-2" type="submit">Search</button>
-                    <button class="btn btn-secondary " type="button" id="clearSearchButton" onclick="clearSearch()">Clear</button>
+                    <button class="btn btn-secondary " type="button" id="clearSearchButton" onclick="clearSearch()">
+                        Clear
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 
     <!-- Card -->
-    <section class="py-5">
-        <div class="container px-4 px-lg-5 mt-5">
-            {% if records %}
-                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                    {% if "error" in records %}
-                        <div class="col mb-5">
-                            <div class="card h-100">
-                                <div class="card-body p-4">
-                                    <div class="text-center">
-                                        <h5 class="fw-bolder">Error: {{ records.error }} Please contact the moderators in the server to resolve this issue.</h5>
+    <div id="posts-div">
+        <section class="py-5">
+            <div class="container px-4 px-lg-5 mt-5">
+                {% if records %}
+                    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                        {% if "error" in records %}
+                            <div class="col mb-5">
+                                <div class="card h-100">
+                                    <div class="card-body p-4">
+                                        <div class="text-center">
+                                            <h5 class="fw-bolder">Error: {{ records.error }} Please contact the
+                                                moderators in the server to resolve this issue.</h5>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% else %}
-                    {% for record in records %}
-                        <div class="col mb-5">
-                            <div class="card h-100">
-                                <!-- Preview image-->
-                                <img class="card-img-top" src="{{ record.preview_image_url }}" alt="Preview"/>
-                                <!-- Details-->
-                                <div class="card-body p-4">
-                                    <div class="text-center">
-                                        <!-- Name-->
-                                        <h5 class="fw-bolder">{{ record.title }}</h5>
-                                        <!-- Author-->
-                                        <p>By: {{ record.author }}</p>
-                                        <p><strong>Team Number:</strong> {{ record.team_number }}</p>
+                        {% else %}
+                            {% for record in records %}
+                                <div class="col mb-5">
+                                    <div class="card h-100">
+                                        <!-- Preview image-->
+                                        <img class="card-img-top" src="{{ record.preview_image_url }}" alt="Preview"/>
+                                        <!-- Details-->
+                                        <div class="card-body p-4">
+                                            <div class="text-center">
+                                                <!-- Name-->
+                                                <h5 class="fw-bolder">{{ record.title }}</h5>
+                                                <!-- Author-->
+                                                <p>By: {{ record.author }}</p>
+                                                <p><strong>Team Number:</strong> {{ record.team_number }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                            <div class="text-center">
+                                                <a class="btn btn-success mt-auto" href="#" data-bs-toggle="modal"
+                                                   data-bs-target="#popover{{ record.uuid }}">
+                                                    See Details
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                    <div class="text-center">
-                                        <a class="btn btn-success mt-auto" href="#" data-bs-toggle="modal"
-                                           data-bs-target="#popover{{ record.uuid }}">
-                                            See Details
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Popover -->
-                        <div class="portfolio-modal modal fade" id="popover{{ record.uuid }}" tabindex="-1"
-                             role="dialog" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-xl">
-                                <div class="modal-content">
-                                    <div class="close-modal" data-bs-dismiss="modal">
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-                                    <div class="container-fluid"
-                                         style="max-height: 90vh; overflow-y: auto; margin-top: auto; margin-bottom: auto;">
-                                        <div class="row justify-content-center">
-                                            <div class="col-lg-11">
-                                                <div class="modal-body" style="margin-top: 2rem;">
-                                                    <div class="row align-items-center">
-                                                        <!-- Text Content -->
-                                                        <div class="col-sm-6">
-                                                            <!-- Name-->
-                                                            <h2 class="fw-bolder">{{ record.title }}</h2>
-                                                            <!-- Author-->
-                                                            <h5 style="margin-top: 1rem; margin-bottom: 2rem;"><strong>By: {{ record.author }}</strong>
-                                                            </h5>
-                                                            <p><strong>Team Number:</strong> {{ record.team_number }}
-                                                            </p>
-                                                            <p><strong>Used in
-                                                                Competition:</strong> {{ "Yes" if record.used_in_comp == True else "No" }}
-                                                            </p>
-                                                            <p><strong>Years used:</strong> {{ record.years_used }}</p>
-                                                            <!-- Description-->
-                                                            <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid rgb(64,133,88); border-radius: 0.375rem;">
-                                                                <strong>Description: </strong>{{ record.description }}
-                                                            </p>
-                                                        </div>
-                                                        <!-- Preview Image -->
-                                                        <div class="col-sm-6 text-center">
-                                                            <img src="{{ record.preview_image_url }}"
-                                                                 class="img-fluid d-block mx-auto" alt="preview-image">
-                                                        </div>
-                                                        <div class="text-center" style="padding: 1rem; height: 6rem;">
-                                                            <a href="{{ record.onshape_link }}" target="_blank">
-                                                                <img class="btn btn-outline-success mt-auto"
-                                                                     style="margin: 0"
-                                                                     src="{{ url_for('static', filename='/images/onshape-logo.png') }}"
-                                                                     alt="Onshape Logo"/>
-                                                            </a>
-                                                            <p style="margin: 0; margin-top: 0.25rem;">View Here</p>
+                                <!-- Popover -->
+                                <div class="portfolio-modal modal fade" id="popover{{ record.uuid }}" tabindex="-1"
+                                     role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                                        <div class="modal-content">
+                                            <div class="close-modal" data-bs-dismiss="modal">
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="container-fluid"
+                                                 style="max-height: 90vh; overflow-y: auto; margin-top: auto; margin-bottom: auto;">
+                                                <div class="row justify-content-center">
+                                                    <div class="col-lg-11">
+                                                        <div class="modal-body" style="margin-top: 2rem;">
+                                                            <div class="row align-items-center">
+                                                                <!-- Text Content -->
+                                                                <div class="col-sm-6">
+                                                                    <!-- Name-->
+                                                                    <h2 class="fw-bolder">{{ record.title }}</h2>
+                                                                    <!-- Author-->
+                                                                    <h5 style="margin-top: 1rem; margin-bottom: 2rem;">
+                                                                        <strong>By: {{ record.author }}</strong>
+                                                                    </h5>
+                                                                    <p><strong>Team
+                                                                        Number:</strong> {{ record.team_number }}
+                                                                    </p>
+                                                                    <p><strong>Used in
+                                                                        Competition:</strong> {{ "Yes" if record.used_in_comp == True else "No" }}
+                                                                    </p>
+                                                                    <p><strong>Years
+                                                                        used:</strong> {{ record.years_used }}</p>
+                                                                    <!-- Description-->
+                                                                    <p style="margin-bottom: 1.5rem; padding: 0.8rem; border: 1px solid rgb(64,133,88); border-radius: 0.375rem;">
+                                                                        <strong>Description: </strong>{{ record.description }}
+                                                                    </p>
+                                                                </div>
+                                                                <!-- Preview Image -->
+                                                                <div class="col-sm-6 text-center">
+                                                                    <img src="{{ record.preview_image_url }}"
+                                                                         class="img-fluid d-block mx-auto"
+                                                                         alt="preview-image">
+                                                                </div>
+                                                                <div class="text-center"
+                                                                     style="padding: 1rem; height: 6rem;">
+                                                                    <a href="{{ record.onshape_link }}" target="_blank">
+                                                                        <img class="btn btn-outline-success mt-auto"
+                                                                             style="margin: 0"
+                                                                             src="{{ url_for('static', filename='/images/onshape-logo.png') }}"
+                                                                             alt="Onshape Logo"/>
+                                                                    </a>
+                                                                    <p style="margin: 0; margin-top: 0.25rem;">View
+                                                                        Here</p>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -116,27 +129,26 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    {% endif %}
-                </div>
-            {% else %}
-                <!-- No results found -->
-                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                    <div class="col mb-5">
-                        <div class="card h-100">
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <h5 class="fw-bolder">No Results Found</h5>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <!-- No results found -->
+                    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                        <div class="col mb-5">
+                            <div class="card h-100">
+                                <div class="card-body p-4">
+                                    <div class="text-center">
+                                        <h5 class="fw-bolder">No Results Found</h5>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            {% endif %}
-        </div>
-    </section>
+                {% endif %}
+            </div>
+        </section>
+    </div>
 
     <script src="{{ url_for('static', filename='/javascript/search.js') }}"></script>
 {% endblock %}

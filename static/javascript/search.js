@@ -18,21 +18,20 @@ async function performSearch(query) {
     const doc = parser.parseFromString(data.template, 'text/html');
 
     // You can either replace the full body or just a specific section
-    const newBody = doc.body;
+    const filteredPosts = doc.getElementById("posts-div");
 
-    if (newBody) {
+    if (filteredPosts) {
         // Replace contents of <body> without replacing the entire document
-        document.body.innerHTML = newBody.innerHTML;
-        setupFormHandler()
+        document.getElementById("posts-div").innerHTML = filteredPosts.innerHTML;
     } else {
-        console.error("Parsed HTML does not contain a <body> element.");
+        console.error("Parsed HTML does not contain filteredPosts");
     }
 }
 
 function setupFormHandler() {
     const form = document.getElementById('searchForm');
     if (!form) {
-        //console.error("Form with id 'searchForm' not found!");
+        console.error("Form with id 'searchForm' not found!");
         return;
     }
 
@@ -45,7 +44,7 @@ function setupFormHandler() {
 
 function clearSearch() {
     document.getElementById("searchBox").value = ""; // Clear input
-    performSearch(""); // Perform search with empty query to clear results
+    performSearch("") // Perform search with empty query to clear results
 }
 
 document.addEventListener('DOMContentLoaded', setupFormHandler);
