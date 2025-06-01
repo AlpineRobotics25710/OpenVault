@@ -1,10 +1,9 @@
-from turtle import pos
 import uuid
+from datetime import datetime
 from json.decoder import JSONDecodeError
 
 import requests
 from requests import JSONDecodeError
-from datetime import datetime
 
 
 def fetch_data_from_github(section, sub_section):
@@ -46,7 +45,8 @@ def fetch_data_from_github(section, sub_section):
                     }
 
                     if "timestamp" in post_info_json:
-                        record["timestamp"] = datetime.fromisoformat(post_info_json["timestamp"]).date().strftime("%m/%d/%Y")
+                        record["timestamp"] = datetime.fromisoformat(post_info_json["timestamp"]).date().strftime(
+                            "%m/%d/%Y")
 
                     if section == "code":
                         record["download_url"] = (
@@ -68,7 +68,7 @@ def fetch_data_from_github(section, sub_section):
                     records.append(record)
     else:
         return {"error": f"GitHub API returned status {response.status_code}"}
-    
+
     # Sort records by timestamp if available
     if records and "timestamp" in records[0]:
         def parse_timestamp(record):
@@ -77,6 +77,7 @@ def fetch_data_from_github(section, sub_section):
                 return datetime.fromisoformat(ts)
             except Exception:
                 return datetime.min
+
         records.sort(key=parse_timestamp, reverse=True)
 
     return records

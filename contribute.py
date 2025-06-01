@@ -1,11 +1,11 @@
 import base64
 import json
 import os
+from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
 from flask import render_template
-from datetime import datetime
 
 load_dotenv()
 
