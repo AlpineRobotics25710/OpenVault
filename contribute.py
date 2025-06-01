@@ -5,6 +5,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from flask import render_template
+from datetime import datetime
 
 load_dotenv()
 
@@ -16,7 +17,7 @@ BRANCH_NAME = "if-this-is-the-name-that-means-somethings-wrong"
 GITHUB_API_URL = f"https://api.github.com/repos/{OWNER}/{REPO}"
 
 
-def submit_pr(request):
+def process_submit_pr(request):
     """Handles form submission and creates a PR."""
 
     form_data = extract_form_data(request)
@@ -54,6 +55,7 @@ def submit_pr(request):
 def create_branch(branch_name, base_branch="main"):
     """Creates a new branch from main (or another base branch)."""
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    print(GITHUB_TOKEN)
 
     # Get latest commit SHA of the base branch
     base_branch_info = requests.get(f"{GITHUB_API_URL}/git/ref/heads/{base_branch}", headers=headers)
@@ -193,6 +195,7 @@ def upload_info_json(req, data, branch_name):
         "description": data["description"],
         "team-number": data["team_number"],
         "email": data["email"],
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
 
     if category == "Code":

@@ -1,13 +1,17 @@
+from turtle import pos
 import uuid
 from json.decoder import JSONDecodeError
 
 import requests
 from requests import JSONDecodeError
+from datetime import datetime
 
 
 def fetch_data_from_github(section, sub_section):
     api_url = f"https://api.github.com/repos/AlpineRobotics25710/OpenVaultFiles/contents/ftc/{section}/{sub_section}"
-    raw_base_url = "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/main/ftc"
+    raw_base_url = (
+        "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/main/ftc"
+    )
 
     records = []
     response = requests.get(api_url)
@@ -20,7 +24,9 @@ def fetch_data_from_github(section, sub_section):
 
         for entry in entries:
             if entry["type"] == "dir" and "filler" not in entry["name"]:
-                info_url = f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/info.json"
+                info_url = (
+                    f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/info.json"
+                )
                 post_info_resp = requests.get(info_url)
 
                 if post_info_resp.status_code == 200:
@@ -39,15 +45,20 @@ def fetch_data_from_github(section, sub_section):
                         "years_used": post_info_json["years-used"],
                     }
 
+                    if "timestamp" in post_info_json:
+                        record["timestamp"] = datetime.fromisoformat(post_info_json["timestamp"]).date().strftime("%m/%d/%Y")
+
                     if section == "code":
-                        record[
-                            "download_url"] = f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['download-name']}"
+                        record["download_url"] = (
+                            f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['download-name']}"
+                        )
                         record["language"] = post_info_json["language"]
                         record["used_in_comp"] = post_info_json["used-in-comp"]
 
                     elif section == "portfolios":
-                        record[
-                            "download_url"] = f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['file-name']}"
+                        record["download_url"] = (
+                            f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['file-name']}"
+                        )
                         record["awards_won"] = post_info_json["awards-won"]
 
                     elif section == "cad":
@@ -57,5 +68,15 @@ def fetch_data_from_github(section, sub_section):
                     records.append(record)
     else:
         return {"error": f"GitHub API returned status {response.status_code}"}
+    
+    # Sort records by timestamp if available
+    if records and "timestamp" in records[0]:
+        def parse_timestamp(record):
+            ts = record.get("timestamp", "")
+            try:
+                return datetime.fromisoformat(ts)
+            except Exception:
+                return datetime.min
+        records.sort(key=parse_timestamp, reverse=True)
 
     return records
