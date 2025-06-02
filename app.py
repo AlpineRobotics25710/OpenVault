@@ -66,16 +66,7 @@ def search_api():
         return jsonify({"error": "No records in session"}), 400
 
     if not search_query:
-        return (
-            jsonify(
-                {
-                    "template": render_template(
-                        session.get("curr_template"), records=records
-                    )
-                }
-            ),
-            200,
-        )
+        return jsonify({"template": render_template(session.get("curr_template"), records=records)}), 200,
 
     # print(f"Search query: {search_query}")
     # print("tfidf_matrix:", tfidf_matrix)
@@ -94,9 +85,7 @@ def search_api():
     # print("Top Similarities:", sorted(similarities, reverse=True)[:5])
     # print("Filtered Indices:", [i for i, sim in filtered])
 
-    rendered_template = render_template(
-        session.get("curr_template"), records=filtered_records
-    )
+    rendered_template = render_template(session.get("curr_template"), records=filtered_records)
 
     return jsonify({"template": rendered_template})
 
