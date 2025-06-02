@@ -7,20 +7,13 @@ from contribute import process_submit_pr
 from search import build_index, search
 from util import fetch_data_from_github
 
-# from github import Auth
-# from github import Github
-
 # TODO: Add filters
-# TODO: Record the date posted and sort posts by date
 # TODO: OpenVault API for developers?
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-
-# auth = Auth.Token(os.getenv("GITHUB_TOKEN"))
-# github = Github(auth=auth)
 
 tfidf_matrix, idf, vocab, texts = None, None, None, None
 
