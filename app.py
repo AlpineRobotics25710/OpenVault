@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, url_for, session, jsonify, redirect
 
 from contribute import process_submit_pr
 from search import build_index, search
@@ -14,8 +14,6 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-
-tfidf_matrix, idf, vocab, texts = None, None, None, None
 
 
 @app.context_processor
@@ -42,16 +40,15 @@ def render_page(base, category):
     records = fetch_data_from_github(base, category)
     session["records"] = records
     session["curr_template"] = f"ftc/{base}/{category}.html"
-    if records:
-        global tfidf_matrix, idf, vocab, texts
-        tfidf_matrix, idf, vocab, texts = build_index(records)
 
     return render_template(session["curr_template"], records=records)
 
 
 # For legacy purposes/ease of use. You can access portfolios through /portfolios/portfolios
+# Simply redirects to /portfolios/portfolios
 @app.route("/portfolios")
 def portfolios():
+    session["curr_template"] = "ftc/portfolios/portfolios.html"
     return redirect(url_for("render_page", base="portfolios", category="portfolios"))
 
 
@@ -61,18 +58,21 @@ def search_api():
 
     records = session.get("records")
     search_query = request.json.get("query", "").strip()
+    curr_template = session.get("curr_template")
 
     if "records" not in session:
         return jsonify({"error": "No records in session"}), 400
 
     if not search_query:
-        return jsonify({"template": render_template(session.get("curr_template"), records=records)}), 200,
+        return jsonify({"template": render_template(curr_template, records=records)}), 200,
 
     # print(f"Search query: {search_query}")
     # print("tfidf_matrix:", tfidf_matrix)
 
-    if not search_query or tfidf_matrix is None:
-        return jsonify({"records": records})
+    tfidf_matrix, idf, vocab, texts = build_index(records)
+
+    if tfidf_matrix is None:
+        return jsonify({"error": "tfidf matrix not present"}), 400
 
     similarities, _ = search(search_query, idf, vocab, tfidf_matrix)
     # print("Similarities:", similarities)
@@ -85,7 +85,7 @@ def search_api():
     # print("Top Similarities:", sorted(similarities, reverse=True)[:5])
     # print("Filtered Indices:", [i for i, sim in filtered])
 
-    rendered_template = render_template(session.get("curr_template"), records=filtered_records)
+    rendered_template = render_template(curr_template, records=filtered_records)
 
     return jsonify({"template": rendered_template})
 

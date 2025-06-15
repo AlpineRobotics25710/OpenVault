@@ -21,7 +21,7 @@ def fetch_data_from_github(section, sub_section):
 
         for entry in entries:
             if entry["type"] == "dir" and "filler" not in entry["name"]:
-                info_url = (f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/info.json")
+                info_url = f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/info.json"
                 post_info_resp = requests.get(info_url)
 
                 if post_info_resp.status_code == 200:
@@ -31,10 +31,11 @@ def fetch_data_from_github(section, sub_section):
                         continue
 
                     record = {"uuid": str(uuid.uuid4()),
-                        "preview_image_url": f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['preview-image-name']}",
-                        "title": post_info_json["title"], "author": post_info_json["author"],
-                        "description": post_info_json["description"], "team_number": post_info_json["team-number"],
-                        "years_used": post_info_json["years-used"], }
+                              "preview_image_url": f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['preview-image-name']}",
+                              "title": post_info_json["title"], "author": post_info_json["author"],
+                              "description": post_info_json["description"],
+                              "team_number": post_info_json["team-number"],
+                              "years_used": post_info_json["years-used"], }
 
                     if "timestamp" in post_info_json:
                         record["timestamp"] = datetime.fromisoformat(post_info_json["timestamp"]).date().strftime(

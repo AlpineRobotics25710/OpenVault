@@ -10,16 +10,20 @@ async function performSearch(query) {
         console.error("Server returned error HTML:", text);
         return;
     }
+    //console.log(response);
 
     const data = await response.json();
+    //console.log(data);
 
     // Parse the HTML string from the server
     const parser = new DOMParser();
     const doc = parser.parseFromString(data.template, 'text/html');
+    //console.log(data.template)
+    //console.log(doc);
 
     // You can either replace the full body or just a specific section
     const filteredPosts = doc.getElementById("posts-div");
-
+    //console.log(filteredPosts);
     if (filteredPosts) {
         // Replace contents of <body> without replacing the entire document
         document.getElementById("posts-div").innerHTML = filteredPosts.innerHTML;
