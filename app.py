@@ -54,8 +54,6 @@ def portfolios():
 
 @app.route("/api/search", methods=["POST"])
 def search_api():
-    global tfidf_matrix, idf, vocab, texts
-
     records = session.get("records")
     search_query = request.json.get("query", "").strip()
     curr_template = session.get("curr_template")
