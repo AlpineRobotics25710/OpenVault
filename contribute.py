@@ -9,8 +9,8 @@ from flask import render_template
 
 load_dotenv()
 
-OWNER = os.getenv("OWNER")
-REPO = os.getenv("REPO")
+OWNER = "AlpineRobotics25710"
+REPO = "OpenVaultFiles"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 BRANCH_NAME = "if-this-is-the-name-that-means-somethings-wrong"
 
