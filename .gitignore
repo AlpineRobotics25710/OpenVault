@@ -7,3 +7,4 @@
 .idea/
 .env
 .vscode/
+node_modules/ # Just in case
