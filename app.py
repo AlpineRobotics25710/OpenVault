@@ -40,6 +40,8 @@ def render_page(base, category):
     records = fetch_data_from_github(base, category)
     session["records"] = records
     session["curr_template"] = f"ftc/{base}/{category}.html"
+    session["base"] = base
+    session["category"] = category
 
     return render_template(session["curr_template"], records=records)
 
@@ -54,38 +56,96 @@ def portfolios():
 
 @app.route("/api/search", methods=["POST"])
 def search_api():
-    records = session.get("records")
     search_query = request.json.get("query", "").strip()
     curr_template = session.get("curr_template")
+    base = session.get("base")
+    category = session.get("category")
 
-    if "records" not in session:
-        return jsonify({"error": "No records in session"}), 400
+    # Always fetch fresh data for search to ensure we have the latest content
+    if base and category:
+        records = fetch_data_from_github(base, category)
+        # Update session with fresh data
+        session["records"] = records
+    else:
+        records = session.get("records")
+
+    if not records:
+        return jsonify({"error": "No records available"}), 400
 
     if not search_query:
-        return jsonify({"template": render_template(curr_template, records=records)}), 200,
+        return (
+            jsonify({"template": render_template(curr_template, records=records)}),
+            200,
+        )
 
-    # print(f"Search query: {search_query}")
-    # print("tfidf_matrix:", tfidf_matrix)
+    try:
+        # Use new Whoosh-based search
+        similarities, ranked_indices = search(search_query, records=records)
 
-    tfidf_matrix, idf, vocab, texts = build_index(records)
+        # Filter results with meaningful similarity scores
+        threshold = 0.01
+        filtered = [
+            (ranked_indices[i], similarities[i])
+            for i in range(len(similarities))
+            if similarities[i] >= threshold
+        ]
 
-    if tfidf_matrix is None:
-        return jsonify({"error": "tfidf matrix not present"}), 400
+        # Sort by similarity score (already sorted by Whoosh, but ensuring order)
+        filtered = sorted(filtered, key=lambda x: x[1], reverse=True)
+        filtered_records = [records[i] for i, _ in filtered]
 
-    similarities, _ = search(search_query, idf, vocab, tfidf_matrix)
-    # print("Similarities:", similarities)
+        rendered_template = render_template(curr_template, records=filtered_records)
+        return jsonify({"template": rendered_template})
 
-    threshold = 0.01
-    filtered = [(i, sim) for i, sim in enumerate(similarities) if sim >= threshold]
-    filtered = sorted(filtered, key=lambda x: x[1], reverse=True)
-    filtered_records = [records[i] for i, _ in filtered]
+    except Exception as e:
+        print(f"Search error: {e}")
+        # Fallback to original records on error
+        rendered_template = render_template(curr_template, records=records)
+        return jsonify({"template": rendered_template})
 
-    # print("Top Similarities:", sorted(similarities, reverse=True)[:5])
-    # print("Filtered Indices:", [i for i, sim in filtered])
 
-    rendered_template = render_template(curr_template, records=filtered_records)
+@app.route("/api/refresh-search-index", methods=["POST"])
+def refresh_search_index():
+    """Manually refresh the search index with latest data from GitHub"""
+    base = session.get("base")
+    category = session.get("category")
 
-    return jsonify({"template": rendered_template})
+    if not base or not category:
+        return jsonify({"error": "No active category to refresh"}), 400
+
+    try:
+        # Fetch fresh data from GitHub
+        records = fetch_data_from_github(base, category)
+        session["records"] = records
+
+        # Force rebuild of search index by clearing the hash
+        from search import force_index_rebuild
+
+        force_index_rebuild()
+
+        return jsonify(
+            {
+                "success": True,
+                "message": f"Search index refreshed with {len(records)} records",
+            }
+        )
+
+    except Exception as e:
+        return jsonify({"error": f"Failed to refresh search index: {str(e)}"}), 500
+
+
+@app.route("/api/search-stats", methods=["GET"])
+def search_stats():
+    """Get statistics about the current search index"""
+    records = session.get("records", [])
+
+    try:
+        from search import get_search_stats
+
+        stats = get_search_stats(records)
+        return jsonify(stats)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/submit-pr", methods=["POST"])
