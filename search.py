@@ -242,9 +242,6 @@ def build_index(records):
 
 def search(
     query,
-    records_or_legacy_param=None,
-    legacy_param2=None,
-    legacy_param3=None,
     records=None,
 ):
     """
