@@ -5,7 +5,7 @@
 *.pyc
 *.log
 .idea/
-!/.env
+/.env
 .vscode/
 node_modules/ # Just in case
 search_index/ # Whoosh search index directory
