@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, url_for, session, jsonify, redirect
 
 from contribute import process_submit_pr
-from search import build_index, search
+from search import search
 from util import fetch_data_from_github
 
 # TODO: Add filters
