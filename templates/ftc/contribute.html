@@ -117,6 +117,12 @@
         <div class="mb-3">
             <label class="form-label">Seasons Used</label>
             <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="season2025-2026" name="seasons" value="2025-2026">
+                <label class="form-check-label" for="season2025-2026">
+                    DECODE (2025-2026)
+                </label>
+            </div>
+            <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="season2024-2025" name="seasons" value="2024-2025">
                 <label class="form-check-label" for="season2024-2025">
                     INTO THE DEEP (2024-2025)
@@ -180,8 +186,33 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label">Code Source</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="codeSource" id="codeSourceZip" value="zip"
+                        checked onchange="toggleCodeSource()">
+                    <label class="form-check-label" for="codeSourceZip">
+                        Upload ZIP file
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="codeSource" id="codeSourceGithub" value="github"
+                        onchange="toggleCodeSource()">
+                    <label class="form-check-label" for="codeSourceGithub">
+                        Link to GitHub repository
+                    </label>
+                </div>
+            </div>
+
+            <div id="codeZipSection" class="mb-3">
                 <label for="codeUpload" class="form-label">Please upload your code as a zip file</label>
                 <input class="form-control" type="file" id="codeUpload" name="codeUpload" accept=".zip">
+            </div>
+
+            <div id="codeGithubSection" class="mb-3 d-none">
+                <label for="githubLink" class="form-label">GitHub Repository URL</label>
+                <input type="url" id="githubLink" name="githubLink" class="form-control"
+                    placeholder="https://github.com/username/repository">
+                <small class="text-muted">Please provide the full URL to your public GitHub repository</small>
             </div>
         </div>
 

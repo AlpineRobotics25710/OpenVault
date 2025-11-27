@@ -8,6 +8,7 @@ from requests import JSONDecodeError
 
 # FTC Season name mapping
 SEASON_NAMES = {
+    "2025-2026": "DECODE",
     "2024-2025": "INTO THE DEEP",
     "2023-2024": "CENTERSTAGE",
     "2022-2023": "POWERPLAY",
@@ -91,9 +92,15 @@ def fetch_data_from_github(section, sub_section):
                         )
 
                     if section == "code":
-                        record["download_url"] = (
-                            f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['download-name']}"
-                        )
+                        # Check if it's a GitHub link or download
+                        if post_info_json.get("github-link"):
+                            record["github_link"] = post_info_json["github-link"]
+                            record["download_url"] = ""  # No download for GitHub links
+                        else:
+                            record["download_url"] = (
+                                f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json.get('download-name', '')}"
+                            )
+                            record["github_link"] = ""
                         record["language"] = post_info_json["language"]
                         record["used_in_comp"] = post_info_json["used-in-comp"]
 

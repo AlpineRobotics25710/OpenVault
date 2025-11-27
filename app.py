@@ -9,6 +9,7 @@ from util import fetch_data_from_github
 
 # TODO: Add filters
 # TODO: OpenVault API for developers?
+# TODO: Add tags to posts
 
 load_dotenv()
 

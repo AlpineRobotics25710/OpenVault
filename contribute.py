@@ -204,13 +204,21 @@ def upload_main_file(req, data, branch_name):
     filename = None
 
     if category == "Code":
-        file = req.files.get("codeUpload")
-        filename = f"ftc/code/{data['code_subcategory']}/{branch_name}/{file.filename}"
+        # Check if it's a GitHub link (no file upload)
+        code_source = req.form.get("codeSource", "zip")
+        if code_source == "zip":
+            file = req.files.get("codeUpload")
+            if file:
+                filename = (
+                    f"ftc/code/{data['code_subcategory']}/{branch_name}/{file.filename}"
+                )
+        # If GitHub link, no file to upload
     elif category == "Portfolios":
         file = req.files.get("portfolioUpload")
-        filename = f"ftc/portfolios/portfolios/{branch_name}/{file.filename}"
+        if file:
+            filename = f"ftc/portfolios/portfolios/{branch_name}/{file.filename}"
 
-    if file:
+    if file and filename:
         content = file.read()
         return create_file(
             filename, base64.b64encode(content).decode("utf-8"), branch_name
@@ -235,10 +243,16 @@ def upload_info_json(req, data, branch_name):
     }
 
     if category == "Code":
+        code_source = req.form.get("codeSource", "zip")
         file = req.files.get("codeUpload")
+        github_link = req.form.get("githubLink", "")
+
         info_data.update(
             {
-                "download-name": file.filename if file else "",
+                "download-name": (
+                    file.filename if (file and code_source == "zip") else ""
+                ),
+                "github-link": github_link if code_source == "github" else "",
                 "used-in-comp": req.form.get("usedInCompCode") == "on",
                 "seasons-used": seasons,
                 "language": req.form.get("languageUsed"),

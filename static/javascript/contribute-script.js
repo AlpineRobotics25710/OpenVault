@@ -1,3 +1,23 @@
+function toggleCodeSource() {
+    const isZip = document.getElementById('codeSourceZip').checked;
+    const zipSection = document.getElementById('codeZipSection');
+    const githubSection = document.getElementById('codeGithubSection');
+    const zipInput = document.getElementById('codeUpload');
+    const githubInput = document.getElementById('githubLink');
+
+    if (isZip) {
+        zipSection.classList.remove('d-none');
+        githubSection.classList.add('d-none');
+        zipInput.setAttribute('required', 'true');
+        githubInput.removeAttribute('required');
+    } else {
+        zipSection.classList.add('d-none');
+        githubSection.classList.remove('d-none');
+        zipInput.removeAttribute('required');
+        githubInput.setAttribute('required', 'true');
+    }
+}
+
 function selectCategory(selectElement) {
     const category = selectElement.value;
 
@@ -8,9 +28,9 @@ function selectCategory(selectElement) {
     const codeExtra = document.getElementById('code');
     const portfoliosExtra = document.getElementById('portfolio');
 
-    // Get all input/select elements within each category section, excluding "used in comp"
+    // Get all input/select elements within each category section, excluding "used in comp" and radio buttons
     const cadInputs = cadExtra.querySelectorAll('input:not(#usedInCompCAD), select, textarea');
-    const codeInputs = codeExtra.querySelectorAll('input:not(#usedInCompCode), select, textarea, input[type="file"]');
+    const codeInputs = codeExtra.querySelectorAll('input:not(#usedInCompCode):not([name="codeSource"]), select, textarea, input[type="file"]');
     const portfolioInputs = portfoliosExtra.querySelectorAll('input, select, textarea, input[type="file"]');
 
     // Reset visibility of all sections
@@ -34,6 +54,8 @@ function selectCategory(selectElement) {
         codeSection.classList.remove('d-none');
         codeExtra.classList.remove('d-none');
         codeInputs.forEach(input => input.setAttribute('required', 'true'));
+        // Initialize code source toggle
+        toggleCodeSource();
     } else if (category === 'Portfolios') {
         portfoliosExtra.classList.remove('d-none');
         portfolioInputs.forEach(input => input.setAttribute('required', 'true'));
