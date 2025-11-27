@@ -20,6 +20,7 @@ Examples:
     python migrate_info_files.py --transform=my_transform --push --branch=my-migration
 """
 
+from dotenv import load_dotenv
 import requests
 import json
 import base64
@@ -28,6 +29,7 @@ import sys
 import argparse
 from typing import List, Dict, Any, Callable, Optional
 
+load_dotenv()
 
 # GitHub configuration
 GITHUB_OWNER = "AlpineRobotics25710"
