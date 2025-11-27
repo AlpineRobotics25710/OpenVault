@@ -125,6 +125,14 @@
                                                             record.awards_won }}</p>
                                                         <p class="mb-3"><strong>Date created:</strong> {{
                                                             record.timestamp if "timestamp" in record else 'N/A' }}</p>
+                                                        {% if record.tags and record.tags|length > 0 %}
+                                                        <p class="mb-2"><strong>Tags:</strong></p>
+                                                        <div class="d-flex flex-wrap gap-2 mb-3">
+                                                            {% for tag in record.tags %}
+                                                            <span class="badge bg-success">{{ tag }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                        {% endif %}
                                                     </div>
                                                     <div class="p-3"
                                                         style="background-color: #f8f9fa; border-left: 4px solid #408558; border-radius: 0.375rem;">

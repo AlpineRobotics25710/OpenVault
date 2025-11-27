@@ -232,6 +232,13 @@ def upload_info_json(req, data, branch_name):
     # Get seasons as an array
     seasons = req.form.getlist("seasons")
 
+    # Get tags as an array from JSON string
+    tags_json = req.form.get("tags", "[]")
+    try:
+        tags = json.loads(tags_json) if tags_json else []
+    except:
+        tags = []
+
     info_data = {
         "preview-image-name": preview_file.filename if preview_file else "",
         "title": data["title"],
@@ -240,6 +247,7 @@ def upload_info_json(req, data, branch_name):
         "team-number": data["team_number"],
         "email": data["email"],
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "tags": tags,
     }
 
     if category == "Code":

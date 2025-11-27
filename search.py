@@ -35,6 +35,7 @@ class WhooshSearchEngine:
             language=KEYWORD(stored=True),  # for code
             awards_won=TEXT(stored=True),  # for portfolios
             used_in_comp=KEYWORD(stored=True),  # for code and cad
+            tags=TEXT(stored=True),  # user-defined tags
             # URLs and file paths
             preview_image_url=STORED,
             download_url=STORED,
@@ -101,6 +102,8 @@ class WhooshSearchEngine:
                     content_parts.append(record["language"])
                 if "awards_won" in record:
                     content_parts.append(record["awards_won"])
+                if "tags" in record:
+                    content_parts.append(" ".join(record["tags"]))
 
                 combined_content = " ".join(str(part) for part in content_parts if part)
 
@@ -116,6 +119,7 @@ class WhooshSearchEngine:
                     language=record.get("language", ""),
                     awards_won=record.get("awards_won", ""),
                     used_in_comp=str(record.get("used_in_comp", "")),
+                    tags=" ".join(record.get("tags", [])),
                     preview_image_url=record.get("preview_image_url", ""),
                     download_url=record.get("download_url", ""),
                     onshape_link=record.get("onshape_link", ""),

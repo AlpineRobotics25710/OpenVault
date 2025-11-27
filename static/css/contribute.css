@@ -8,7 +8,8 @@
     font-weight: bold;
 }
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     border-radius: 8px;
     margin-bottom: 15px;
 }
@@ -24,4 +25,30 @@
 .select-container {
     display: flex;
     flex-direction: column;
+}
+
+.tag-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.65rem;
+    background-color: #408558;
+    color: white;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    margin: 0.2rem;
+}
+
+.tag-badge .remove-tag {
+    margin-left: 0.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+.tag-badge .remove-tag:hover {
+    opacity: 1;
+}
+
+.gap-2 {
+    gap: 0.5rem;
 }

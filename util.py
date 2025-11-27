@@ -71,6 +71,11 @@ def fetch_data_from_github(section, sub_section):
                     if isinstance(seasons_raw, str):
                         seasons_raw = [seasons_raw]
 
+                    # Get tags (default to empty array if not present)
+                    tags = post_info_json.get("tags", [])
+                    if isinstance(tags, str):
+                        tags = [tags]
+
                     record = {
                         "uuid": str(uuid.uuid4()),
                         "preview_image_url": f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['preview-image-name']}",
@@ -82,6 +87,7 @@ def fetch_data_from_github(section, sub_section):
                         "seasons_display": [
                             format_season_with_name(s) for s in seasons_raw
                         ],
+                        "tags": tags,
                     }
 
                     if "timestamp" in post_info_json:

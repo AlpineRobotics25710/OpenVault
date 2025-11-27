@@ -62,6 +62,53 @@ function selectCategory(selectElement) {
     }
 }
 
+let tags = [];
+
+function addTag() {
+    const tagInput = document.getElementById('tagInput');
+    const tag = tagInput.value.trim();
+
+    if (tag && !tags.includes(tag)) {
+        tags.push(tag);
+        updateTagsDisplay();
+        updateTagsHidden();
+        tagInput.value = '';
+    }
+}
+
+function removeTag(tag) {
+    tags = tags.filter(t => t !== tag);
+    updateTagsDisplay();
+    updateTagsHidden();
+}
+
+function updateTagsDisplay() {
+    const container = document.getElementById('tagsContainer');
+    container.innerHTML = tags.map(tag => `
+        <span class="tag-badge">
+            ${tag}
+            <span class="remove-tag" onclick="removeTag('${tag.replace(/'/g, "\\'")}')">×</span>
+        </span>
+    `).join('');
+}
+
+function updateTagsHidden() {
+    document.getElementById('tagsHidden').value = JSON.stringify(tags);
+}
+
+// Allow adding tags with Enter key
+document.addEventListener('DOMContentLoaded', function () {
+    const tagInput = document.getElementById('tagInput');
+    if (tagInput) {
+        tagInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag();
+            }
+        });
+    }
+});
+
 function validateForm() {
     const category = document.getElementById('category').value;
 

@@ -160,6 +160,20 @@
             <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
         </div>
 
+        <!-- Tags Input -->
+        <div class="mb-3">
+            <label class="form-label">Tags (optional)</label>
+            <small class="text-muted d-block mb-2">Add tags to help others find your post (e.g., "pedro pathing", "road
+                runner", "dr4b")</small>
+            <div class="d-flex gap-2 mb-2">
+                <input type="text" id="tagInput" class="form-control" placeholder="Enter a tag and press enter">
+            </div>
+            <div id="tagsContainer" class="d-flex flex-wrap gap-2">
+                <!-- Tags will be added here dynamically -->
+            </div>
+            <input type="hidden" id="tagsHidden" name="tags" value="">
+        </div>
+
         <!-- CAD Section -->
         <div id="cad" class="d-none mb-3">
             <label for="onshapeLink" class="form-label">Onshape Link</label>
