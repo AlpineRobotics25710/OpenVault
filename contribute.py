@@ -58,19 +58,30 @@ def create_branch(branch_name, base_branch="main"):
     print(GITHUB_TOKEN)
 
     # Get latest commit SHA of the base branch
-    base_branch_info = requests.get(f"{GITHUB_API_URL}/git/ref/heads/{base_branch}", headers=headers)
+    base_branch_info = requests.get(
+        f"{GITHUB_API_URL}/git/ref/heads/{base_branch}", headers=headers
+    )
     if base_branch_info.status_code != 200:
-        return {"error": "Failed to get base branch info", "details": base_branch_info.json()}
+        return {
+            "error": "Failed to get base branch info",
+            "details": base_branch_info.json(),
+        }
 
     base_sha = base_branch_info.json()["object"]["sha"]
 
     # Create a new branch
     branch_ref = f"refs/heads/{branch_name}"
-    create_branch_response = requests.post(f"{GITHUB_API_URL}/git/refs", headers=headers,
-                                           json={"ref": branch_ref, "sha": base_sha})
+    create_branch_response = requests.post(
+        f"{GITHUB_API_URL}/git/refs",
+        headers=headers,
+        json={"ref": branch_ref, "sha": base_sha},
+    )
 
     if create_branch_response.status_code != 201:
-        return {"error": "Failed to create branch", "details": create_branch_response.json()}
+        return {
+            "error": "Failed to create branch",
+            "details": create_branch_response.json(),
+        }
 
     return {"message": "Branch created successfully", "branch_name": branch_name}
 
@@ -107,7 +118,11 @@ def create_file(filename, encoded_content, branch_name):
     create_file_response = requests.put(file_url, headers=headers, json=data)
 
     if create_file_response.status_code not in [200, 201]:
-        return {"error": "Failed to create file", "details": create_file_response.json(), "filename": filename}
+        return {
+            "error": "Failed to create file",
+            "details": create_file_response.json(),
+            "filename": filename,
+        }
 
     return {"message": "File created successfully", "filename": filename}
 
@@ -117,8 +132,11 @@ def create_pull_request(title, body, branch_name, base="main"):
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
     pr_url = f"{GITHUB_API_URL}/pulls"
 
-    pr_response = requests.post(pr_url, headers=headers,
-                                json={"title": title, "body": body, "head": branch_name, "base": base})
+    pr_response = requests.post(
+        pr_url,
+        headers=headers,
+        json={"title": title, "body": body, "head": branch_name, "base": base},
+    )
 
     if pr_response.status_code != 201:
         return {"error": "Failed to create PR", "details": pr_response.json()}
@@ -135,12 +153,14 @@ def extract_form_data(req):
         "description": req.form.get("description"),
         "category": req.form.get("category"),
         "cad_subcategory": req.form.get("cadSubcategory"),
-        "code_subcategory": req.form.get("codeSubcategory")
+        "code_subcategory": req.form.get("codeSubcategory"),
     }
 
 
 def validate_required_fields(data):
-    return all(data.get(field) for field in ["email", "team_number", "title", "category"])
+    return all(
+        data.get(field) for field in ["email", "team_number", "title", "category"]
+    )
 
 
 def generate_branch_name(team_number, title):
@@ -148,12 +168,21 @@ def generate_branch_name(team_number, title):
 
 
 def render_error(error_message):
-    return render_template("ftc/contribute.html", error=True, error_message={"error": str(error_message)}), 400
+    return (
+        render_template(
+            "ftc/contribute.html",
+            error=True,
+            error_message={"error": str(error_message)},
+        ),
+        400,
+    )
 
 
 def upload_preview_image(preview_file, data, branch_name):
     category = data["category"]
-    subcategory = data["code_subcategory"] if category == "Code" else data["cad_subcategory"]
+    subcategory = (
+        data["code_subcategory"] if category == "Code" else data["cad_subcategory"]
+    )
 
     if category == "Code":
         path = f"ftc/code/{subcategory}/{branch_name}"
@@ -164,7 +193,9 @@ def upload_preview_image(preview_file, data, branch_name):
 
     preview_filename = f"{path}/{preview_file.filename}"
     content = preview_file.read()
-    return create_file(preview_filename, base64.b64encode(content).decode("utf-8"), branch_name)
+    return create_file(
+        preview_filename, base64.b64encode(content).decode("utf-8"), branch_name
+    )
 
 
 def upload_main_file(req, data, branch_name):
@@ -181,12 +212,17 @@ def upload_main_file(req, data, branch_name):
 
     if file:
         content = file.read()
-        return create_file(filename, base64.b64encode(content).decode("utf-8"), branch_name)
+        return create_file(
+            filename, base64.b64encode(content).decode("utf-8"), branch_name
+        )
 
 
 def upload_info_json(req, data, branch_name):
     preview_file = req.files.get("previewImage")
     category = data["category"]
+
+    # Get seasons as an array
+    seasons = req.form.getlist("seasons")
 
     info_data = {
         "preview-image-name": preview_file.filename if preview_file else "",
@@ -200,30 +236,38 @@ def upload_info_json(req, data, branch_name):
 
     if category == "Code":
         file = req.files.get("codeUpload")
-        info_data.update({
-            "download-name": file.filename if file else "",
-            "used-in-comp": req.form.get("usedInCompCode") == "on",
-            "years-used": req.form.get("yearsUsed"),
-            "language": req.form.get("languageUsed"),
-        })
+        info_data.update(
+            {
+                "download-name": file.filename if file else "",
+                "used-in-comp": req.form.get("usedInCompCode") == "on",
+                "seasons-used": seasons,
+                "language": req.form.get("languageUsed"),
+            }
+        )
         path = f"ftc/code/{data['code_subcategory']}/{branch_name}/info.json"
     elif category == "Portfolios":
         file = req.files.get("portfolioUpload")
-        info_data.update({
-            "file-name": file.filename if file else "",
-            "years-used": req.form.get("yearsUsed"),
-            "awards-won": req.form.get("awardsWon"),
-        })
+        info_data.update(
+            {
+                "file-name": file.filename if file else "",
+                "seasons-used": seasons,
+                "awards-won": req.form.get("awardsWon"),
+            }
+        )
         path = f"ftc/portfolios/portfolios/{branch_name}/info.json"
     elif category == "CAD":
-        info_data.update({
-            "used-in-comp": req.form.get("usedInCompCAD") == "on",
-            "years-used": req.form.get("yearsUsed"),
-            "onshape-link": req.form.get("onshapeLink"),
-        })
+        info_data.update(
+            {
+                "used-in-comp": req.form.get("usedInCompCAD") == "on",
+                "seasons-used": seasons,
+                "onshape-link": req.form.get("onshapeLink"),
+            }
+        )
         path = f"ftc/cad/{data['cad_subcategory']}/{branch_name}/info.json"
 
-    encoded = base64.b64encode(json.dumps(info_data, indent=4).encode("utf-8")).decode("utf-8")
+    encoded = base64.b64encode(json.dumps(info_data, indent=4).encode("utf-8")).decode(
+        "utf-8"
+    )
     return create_file(path, encoded, branch_name)
 
 

@@ -2,17 +2,30 @@
 
 
 {% block intermediateHead %}
-    <title>OpenVault - CAD - Robots</title>
+<title>OpenVault - CAD - Robots</title>
 {% endblock %}
 
 {% block header %}
-    <!-- Header-->
-    <header class="py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Robots</h1>
-                <p class="lead fw-normal text-white-50 mb-0">Find various 3D models that you can use yourself!</p>
-            </div>
+<!-- Header-->
+<header class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Robots</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Find various 3D models that you can use yourself!</p>
         </div>
-    </header>
+    </div>
+</header>
+{% endblock %}
+
+{% block seasonFilter %}
+<div class="season-tabs-container">
+    <ul class="season-tabs">
+        <li><a href="#" class="season-tab active" data-season="all">All Seasons</a></li>
+        <li><a href="#" class="season-tab" data-season="2024-2025">INTO THE DEEP (2024-2025)</a></li>
+        <li><a href="#" class="season-tab" data-season="2023-2024">CENTERSTAGE (2023-2024)</a></li>
+        <li><a href="#" class="season-tab" data-season="2022-2023">POWERPLAY (2022-2023)</a></li>
+        <li><a href="#" class="season-tab" data-season="2021-2022">FREIGHT FRENZY (2021-2022)</a></li>
+        <li><a href="#" class="season-tab" data-season="2020-2021">ULTIMATE GOAL (2020-2021)</a></li>
+    </ul>
+</div>
 {% endblock %}

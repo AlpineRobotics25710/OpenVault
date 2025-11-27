@@ -1,0 +1,14 @@
+{
+    "preview-image-name": "Screenshot 2025-03-07 164401.png",
+    "title": "TelemetryUtil",
+    "author": "Alpine Robotics",
+    "description": "A simple class which makes adding telemetry much easier, anywhere in your code. In your OpMode, all you have to do is call setup() and pass in the current instance of your telemetry. Now, anywhere in your code, you can call TelemetryUtil.addData() to send telemetry to both the control hub and FTC Dashboard. Make sure to be updating in your opmode loop by calling update().",
+    "team-number": "25710",
+    "email": "prathyushyeturi@gmail.com",
+    "download-name": "TelemetryUtil.zip",
+    "used-in-comp": true,
+    "language": "Java",
+    "seasons-used": [
+        "2024-2025"
+    ]
+}

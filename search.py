@@ -28,8 +28,8 @@ class WhooshSearchEngine:
             description=TEXT(stored=True),
             author=TEXT(stored=True),
             # Structured data fields
-            team_number=KEYWORD(stored=True),
-            years_used=KEYWORD(stored=True),
+            team_number=ID(stored=True),
+            seasons_used=KEYWORD(stored=True),
             timestamp=ID(stored=True),
             # Category-specific fields
             language=KEYWORD(stored=True),  # for code
@@ -111,7 +111,7 @@ class WhooshSearchEngine:
                     description=record.get("description", ""),
                     author=record.get("author", ""),
                     team_number=str(record.get("team_number", "")),
-                    years_used=" ".join(map(str, record.get("years_used", []))),
+                    seasons_used=" ".join(map(str, record.get("seasons_used", []))),
                     timestamp=record.get("timestamp", ""),
                     language=record.get("language", ""),
                     awards_won=record.get("awards_won", ""),
