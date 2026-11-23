@@ -198,6 +198,23 @@ class SubmitTests(unittest.TestCase):
         self.assertEqual(resp.status_code, 400)
         self.assertNotIn("Your Submission Has Been Recorded", resp.get_data(as_text=True))
 
+    def test_non_https_links_rejected_before_github(self):
+        for link in ["javascript:alert(1)", "http://cad.onshape.com/x", "https://evil.com/x"]:
+            resp, req = self.submit(dict(self.FORM, onshapeLink=link), None)
+            self.assertEqual(resp.status_code, 400, link)
+            req.assert_not_called()
+        code_form = dict(self.FORM, category="Code", codeSubcategory="teleop",
+                         codeSource="github", githubLink="javascript:alert(1)")
+        resp, req = self.submit(code_form, None)
+        self.assertEqual(resp.status_code, 400)
+        req.assert_not_called()
+
+    def test_existing_bad_links_not_rendered(self):
+        self.assertEqual(util.safe_url("javascript:alert(1)"), "")
+        self.assertEqual(util.safe_url(" JavaScript:alert(1)"), "")
+        self.assertEqual(util.safe_url("data:text/html,x"), "")
+        self.assertEqual(util.safe_url("https://cad.onshape.com/d/1"), "https://cad.onshape.com/d/1")
+
     def test_invalid_subcategory_rejected_before_github(self):
         resp, req = self.submit(dict(self.FORM, cadSubcategory="nope"), None)
         self.assertEqual(resp.status_code, 400)

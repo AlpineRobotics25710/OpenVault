@@ -8,7 +8,7 @@ import requests
 from flask import render_template
 from werkzeug.utils import secure_filename
 
-from util import CATEGORIES, CONTENT_REPO, TIMEOUT, github_headers
+from util import CATEGORIES, CONTENT_REPO, TIMEOUT, github_headers, safe_url
 
 GITHUB_API_URL = f"https://api.github.com/repos/{CONTENT_REPO}"
 
@@ -46,6 +46,13 @@ def process_submit_pr(request):
         category = "portfolios"
     if section is None or category not in CATEGORIES[section]:
         return render_error("Please choose a valid category and subcategory.")
+
+    if section == "cad":
+        if not safe_url(form.get("onshapeLink"), {"cad.onshape.com"}):
+            return render_error("Onshape link must start with https://cad.onshape.com/")
+    elif section == "code" and form.get("codeSource", "zip") == "github":
+        if not safe_url(form.get("githubLink"), {"github.com"}):
+            return render_error("GitHub link must start with https://github.com/")
 
     branch = generate_branch_name(data["team_number"], data["title"])
     folder = f"ftc/{section}/{category}/{branch}"

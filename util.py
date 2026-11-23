@@ -4,6 +4,7 @@ import time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
+from urllib.parse import urlparse
 
 import requests
 
@@ -94,6 +95,18 @@ def season_filters(records):
     return [(s, SEASON_NAMES[s], counts[s]) for s in SEASON_NAMES if s in counts]
 
 
+def safe_url(url, hosts=None):
+    """Return url if it is http(s) (and, if given, on one of hosts), else ''.
+    Blocks javascript:/data: links from user-submitted info.json."""
+    url = str(url or "").strip()
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        return ""
+    if hosts is not None and (parsed.scheme != "https" or parsed.hostname not in hosts):
+        return ""
+    return url
+
+
 def _as_list(value):
     return [value] if isinstance(value, str) else list(value or [])
 
@@ -131,7 +144,7 @@ def _load_record(section, category, folder):
             "added": _parse_date(info.get("timestamp")),
         }
         if section == "code":
-            github_link = info.get("github-link") or ""
+            github_link = safe_url(info.get("github-link"))
             record["github_link"] = github_link
             record["download_url"] = (
                 "" if github_link else f"{base_url}/{info.get('download-name', '')}"
@@ -143,7 +156,7 @@ def _load_record(section, category, folder):
             record["awards_won"] = info.get("awards-won", "")
         elif section == "cad":
             record["used_in_comp"] = info.get("used-in-comp", False)
-            record["onshape_link"] = info.get("onshape-link", "")
+            record["onshape_link"] = safe_url(info.get("onshape-link"))
         return record
     except (requests.RequestException, ValueError, KeyError, TypeError, AttributeError) as e:
         print(f"Skipping {section}/{category}/{folder}: {e!r}")
