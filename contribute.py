@@ -144,7 +144,7 @@ def build_info_json(form, data, section, preview_name, main_name):
         info.update(
             {
                 "download-name": "" if is_github else main_name,
-                "github-link": form.get("githubLink", "") if is_github else "",
+                "github-link": safe_url(form.get("githubLink"), {"github.com"}) if is_github else "",
                 "used-in-comp": form.get("usedInCompCode") == "on",
                 "language": form.get("languageUsed", ""),
             }
@@ -155,7 +155,7 @@ def build_info_json(form, data, section, preview_name, main_name):
         info.update(
             {
                 "used-in-comp": form.get("usedInCompCAD") == "on",
-                "onshape-link": form.get("onshapeLink", ""),
+                "onshape-link": safe_url(form.get("onshapeLink"), {"cad.onshape.com"}),
             }
         )
     return info

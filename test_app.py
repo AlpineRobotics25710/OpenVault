@@ -214,6 +214,12 @@ class SubmitTests(unittest.TestCase):
         self.assertEqual(util.safe_url(" JavaScript:alert(1)"), "")
         self.assertEqual(util.safe_url("data:text/html,x"), "")
         self.assertEqual(util.safe_url("https://cad.onshape.com/d/1"), "https://cad.onshape.com/d/1")
+        gh = {"github.com"}
+        # browsers treat "\" as "/", so the raw string would navigate to evil.com
+        self.assertEqual(util.safe_url("https://evil.com\\@github.com/x", gh), "https://github.com/x")
+        self.assertEqual(util.safe_url("https://user:pw@github.com/x", gh), "https://github.com/x")
+        self.assertEqual(util.safe_url("https://github.com:99999/x", gh), "")
+        self.assertEqual(util.safe_url("https://github.com.evil.com/x", gh), "")
 
     def test_invalid_subcategory_rejected_before_github(self):
         resp, req = self.submit(dict(self.FORM, cadSubcategory="nope"), None)

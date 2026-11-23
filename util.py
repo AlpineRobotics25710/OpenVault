@@ -98,13 +98,19 @@ def season_filters(records):
 def safe_url(url, hosts=None):
     """Return url if it is http(s) (and, if given, on one of hosts), else ''.
     Blocks javascript:/data: links from user-submitted info.json."""
-    url = str(url or "").strip()
-    parsed = urlparse(url)
+    parsed = urlparse(str(url or "").strip())
+    try:
+        port = parsed.port
+    except ValueError:
+        return ""
     if parsed.scheme not in ("http", "https") or not parsed.hostname:
         return ""
     if hosts is not None and (parsed.scheme != "https" or parsed.hostname not in hosts):
         return ""
-    return url
+    # Rebuild from the validated host, dropping userinfo, so browsers and urlparse can't
+    # disagree about the destination (e.g. "https://evil.com\\@github.com/").
+    netloc = parsed.hostname + (f":{port}" if port else "")
+    return parsed._replace(netloc=netloc).geturl()
 
 
 def _as_list(value):
