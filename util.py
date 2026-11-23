@@ -1,12 +1,44 @@
-import uuid
-from datetime import datetime
-from json.decoder import JSONDecodeError
+import os
+import re
+import time
+from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
+from datetime import date, datetime
 
 import requests
-from requests import JSONDecodeError
 
+CONTENT_REPO = "AlpineRobotics25710/OpenVaultFiles"
+TREE_URL = f"https://api.github.com/repos/{CONTENT_REPO}/git/trees/main?recursive=1"
+RAW_BASE = f"https://raw.githubusercontent.com/{CONTENT_REPO}/main/ftc"
+TIMEOUT = 10  # seconds per GitHub request
+CACHE_TTL = 300  # seconds a category listing is reused before refetching
 
-# FTC Season name mapping
+# Single source of truth for site sections and their categories.
+# Each (section, category) maps to ftc/<section>/<category>/ in OpenVaultFiles.
+SECTIONS = {"cad": "CAD", "code": "Code", "portfolios": "Portfolios"}
+CATEGORIES = {
+    "cad": {
+        "active-intakes": "Active Intakes",
+        "arms": "Arms",
+        "claws": "Claws",
+        "dead-axles": "Dead Axles",
+        "drivetrains": "Drivetrains",
+        "linkages": "Linkages",
+        "outtakes": "Outtakes",
+        "power-transmissions": "Power Transmissions",
+        "robots": "Robots",
+    },
+    "code": {
+        "autonomous": "Autonomous",
+        "full-repo": "Full Repositories",
+        "mechanism-control": "Mechanism Control",
+        "teleop": "TeleOp",
+        "vision": "Vision",
+    },
+    "portfolios": {"portfolios": "Portfolios"},
+}
+
+# FTC season names, most recent first. Add each new season at the top.
 SEASON_NAMES = {
     "2025-2026": "DECODE",
     "2024-2025": "INTO THE DEEP",
@@ -21,122 +53,157 @@ SEASON_NAMES = {
     "2015-2016": "RES-Q",
 }
 
+# ponytail: per-process caches; each serverless instance keeps its own copy.
+# Move to a shared cache (e.g. Redis/KV) if GitHub rate limits still bite.
+_cache = {}  # (section, category) -> (fetched_at, records)
+_folders = None  # (fetched_at, {(section, category): [folders]})
+
+
+def github_headers():
+    token = os.getenv("GITHUB_TOKEN")
+    return {"Authorization": f"token {token}"} if token else {}
+
 
 def format_season_with_name(season_year):
-    """Format a season year with its name, e.g., '2024-2025 (INTO THE DEEP)'"""
-    if not season_year or not isinstance(season_year, str):
-        return season_year
-
-    season_year = season_year.strip()
-    season_name = SEASON_NAMES.get(season_year)
-
-    if season_name:
-        return f"{season_year} ({season_name})"
-    return season_year
+    """'2024-2025' -> '2024-2025 (INTO THE DEEP)'"""
+    season_year = str(season_year).strip()
+    name = SEASON_NAMES.get(season_year)
+    return f"{season_year} ({name})" if name else season_year
 
 
-def fetch_data_from_github(section, sub_section):
-    api_url = f"https://api.github.com/repos/AlpineRobotics25710/OpenVaultFiles/contents/ftc/{section}/{sub_section}"
-    raw_base_url = (
-        "https://raw.githubusercontent.com/AlpineRobotics25710/OpenVaultFiles/main/ftc"
-    )
+def normalize_season(value):
+    """'2024-25' / '2024 - 2025' -> '2024-2025'; None for anything that isn't a known season."""
+    m = re.fullmatch(r"(\d{4})\s*[-–]\s*(\d{2}|\d{4})", str(value).strip())
+    if not m:
+        return None
+    start = int(m.group(1))
+    if int(m.group(2)) % 100 != (start + 1) % 100:
+        return None
+    season = f"{start}-{start + 1}"
+    return season if season in SEASON_NAMES else None
 
-    records = []
-    response = requests.get(api_url)
 
-    if response.status_code == 200:
-        try:
-            entries = response.json()
-        except JSONDecodeError:
-            return {"error": "Failed to decode GitHub API response."}
+def season_filters(records):
+    """[(season, name, post count)] newest first, for seasons that have posts.
+    Empty when filtering would not narrow anything (no seasons, or every post shares one)."""
+    if not isinstance(records, list):
+        return []
+    counts = Counter(s for r in records for s in r["seasons_used"])
+    if not any(n < len(records) for n in counts.values()):
+        return []
+    return [(s, SEASON_NAMES[s], counts[s]) for s in SEASON_NAMES if s in counts]
 
-        for entry in entries:
-            if entry["type"] == "dir" and "filler" not in entry["name"]:
-                info_url = (
-                    f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/info.json"
-                )
-                post_info_resp = requests.get(info_url)
 
-                if post_info_resp.status_code == 200:
-                    try:
-                        post_info_json = post_info_resp.json()
-                    except JSONDecodeError:
-                        continue
+def _as_list(value):
+    return [value] if isinstance(value, str) else list(value or [])
 
-                    # Support both new seasons-used and old years-used for backwards compatibility
-                    seasons_raw = post_info_json.get(
-                        "seasons-used", post_info_json.get("years-used", [])
-                    )
-                    # Ensure it's a list
-                    if isinstance(seasons_raw, str):
-                        seasons_raw = [seasons_raw]
 
-                    # Get tags (default to empty array if not present)
-                    tags = post_info_json.get("tags", [])
-                    if isinstance(tags, str):
-                        tags = [tags]
+def _parse_date(value):
+    try:
+        return datetime.fromisoformat(value).date()
+    except (TypeError, ValueError):
+        return None
 
-                    record = {
-                        "uuid": str(uuid.uuid4()),
-                        "preview_image_url": f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['preview-image-name']}",
-                        "title": post_info_json["title"],
-                        "author": post_info_json["author"],
-                        "description": post_info_json["description"],
-                        "team_number": post_info_json["team-number"],
-                        "seasons_used": seasons_raw,
-                        "seasons_display": [
-                            format_season_with_name(s) for s in seasons_raw
-                        ],
-                        "tags": tags,
-                    }
 
-                    if "timestamp" in post_info_json:
-                        record["timestamp"] = (
-                            datetime.fromisoformat(post_info_json["timestamp"])
-                            .date()
-                            .strftime("%m/%d/%Y")
-                        )
+def _load_record(section, category, folder):
+    """Fetch and parse one post's info.json. Returns None if it is missing or malformed."""
+    base_url = f"{RAW_BASE}/{section}/{category}/{folder}"
+    try:
+        resp = requests.get(f"{base_url}/info.json", timeout=TIMEOUT)
+        resp.raise_for_status()
+        info = resp.json()
+        # Accept legacy "years-used" for posts not yet migrated to "seasons-used".
+        seasons = _as_list(info.get("seasons-used", info.get("years-used")))
+        normalized = [normalize_season(s) for s in seasons]
+        record = {
+            "id": folder,
+            "title": info["title"],
+            "author": info.get("author", ""),
+            "description": info.get("description", ""),
+            "team_number": info.get("team-number", ""),
+            "preview_image_url": f"{base_url}/{info.get('preview-image-name', '')}",
+            # Normalized known seasons drive the filter; display keeps what the author wrote.
+            "seasons_used": list(dict.fromkeys(s for s in normalized if s)),
+            "seasons_display": [
+                format_season_with_name(n or s) for s, n in zip(seasons, normalized)
+            ],
+            "tags": _as_list(info.get("tags")),
+            "added": _parse_date(info.get("timestamp")),
+        }
+        if section == "code":
+            github_link = info.get("github-link") or ""
+            record["github_link"] = github_link
+            record["download_url"] = (
+                "" if github_link else f"{base_url}/{info.get('download-name', '')}"
+            )
+            record["language"] = info.get("language", "")
+            record["used_in_comp"] = info.get("used-in-comp", False)
+        elif section == "portfolios":
+            record["download_url"] = f"{base_url}/{info.get('file-name', '')}"
+            record["awards_won"] = info.get("awards-won", "")
+        elif section == "cad":
+            record["used_in_comp"] = info.get("used-in-comp", False)
+            record["onshape_link"] = info.get("onshape-link", "")
+        return record
+    except (requests.RequestException, ValueError, KeyError, TypeError, AttributeError) as e:
+        print(f"Skipping {section}/{category}/{folder}: {e!r}")
+        return None
 
-                    if section == "code":
-                        # Check if it's a GitHub link or download
-                        if post_info_json.get("github-link"):
-                            record["github_link"] = post_info_json["github-link"]
-                            record["download_url"] = ""  # No download for GitHub links
-                        else:
-                            record["download_url"] = (
-                                f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json.get('download-name', '')}"
-                            )
-                            record["github_link"] = ""
-                        record["language"] = post_info_json["language"]
-                        record["used_in_comp"] = post_info_json["used-in-comp"]
 
-                    elif section == "portfolios":
-                        record["download_url"] = (
-                            f"{raw_base_url}/{section}/{sub_section}/{entry['name']}/{post_info_json['file-name']}"
-                        )
-                        record["awards_won"] = post_info_json["awards-won"]
+def _fetch_post_folders():
+    """{(section, category): [post folder names]} for every folder that has an info.json.
+    One git-trees API call covers the whole repo, so the rate limit is spent once per TTL."""
+    resp = requests.get(TREE_URL, headers=github_headers(), timeout=TIMEOUT)
+    if resp.status_code == 401 and github_headers():
+        # A bad/expired token must not take the site down; the repo is public.
+        print("GITHUB_TOKEN rejected (401); retrying without auth. Replace the token.")
+        resp = requests.get(TREE_URL, timeout=TIMEOUT)
+    resp.raise_for_status()
+    folders = {}
+    for item in resp.json()["tree"]:
+        parts = item["path"].split("/")  # ftc/<section>/<category>/<folder>/info.json
+        if len(parts) == 5 and parts[0] == "ftc" and parts[4] == "info.json" and "filler" not in parts[3]:
+            folders.setdefault((parts[1], parts[2]), []).append(parts[3])
+    return folders
 
-                    elif section == "cad":
-                        record["used_in_comp"] = post_info_json["used-in-comp"]
-                        record["onshape_link"] = post_info_json["onshape-link"]
 
-                    records.append(record)
-    else:
-        return {"error": f"GitHub API returned status {response.status_code}"}
+def _post_folders():
+    global _folders
+    if _folders and time.monotonic() - _folders[0] < CACHE_TTL:
+        return _folders[1]
+    try:
+        _folders = (time.monotonic(), _fetch_post_folders())
+    except (requests.RequestException, ValueError, KeyError) as e:
+        if not _folders:
+            raise
+        # Stale listing beats an error page (e.g. while rate limited); retry after next TTL.
+        print(f"GitHub listing failed, serving last good listing: {e!r}")
+        _folders = (time.monotonic(), _folders[1])
+    return _folders[1]
 
-    # Sort records by timestamp - earliest first, records without timestamp at the end
-    def sort_key(record):
-        ts = record.get("timestamp", "")
-        if not ts:
-            # Records without timestamp go to the end (use max date)
-            return datetime.max
-        try:
-            # Parse the formatted date string back to datetime for sorting
-            return datetime.strptime(ts, "%m/%d/%Y")
-        except Exception:
-            # Invalid timestamps also go to the end
-            return datetime.max
 
-    records.sort(key=sort_key)
+def fetch_data_from_github(section, category):
+    """Return the list of post records for a category, or {"error": msg} on failure."""
+    key = (section, category)
+    cached = _cache.get(key)
+    if cached and time.monotonic() - cached[0] < CACHE_TTL:
+        return cached[1]
 
+    try:
+        folders = _post_folders().get(key, [])
+    except (requests.RequestException, ValueError, KeyError) as e:
+        print(f"GitHub listing failed: {e!r}")
+        status = getattr(getattr(e, "response", None), "status_code", None)
+        if status in (403, 429):
+            return {"error": "GitHub rate limit reached. Please try again in a few minutes."}
+        return {"error": f"Could not load posts from GitHub (status {status or 'unavailable'})."}
+
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        records = [
+            r for r in pool.map(lambda f: _load_record(section, category, f), folders) if r
+        ]
+
+    # Oldest first; posts without a date go last.
+    records.sort(key=lambda r: r["added"] or date.max)
+    _cache[key] = (time.monotonic(), records)
     return records

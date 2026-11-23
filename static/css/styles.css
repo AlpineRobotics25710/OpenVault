@@ -317,6 +317,7 @@ header {
 }
 
 .season-tab {
+    font: inherit;
     padding: 0.4rem 0.9rem;
     border-radius: 0.25rem;
     text-decoration: none;
@@ -341,6 +342,27 @@ header {
     background-color: #166030;
     color: white;
     border-color: #166030;
+}
+
+.season-tab {
+    border-radius: 999px;
+}
+
+.season-count {
+    display: inline-block;
+    min-width: 1.5em;
+    margin-left: 0.35rem;
+    padding: 0 0.4em;
+    border-radius: 999px;
+    font-size: 0.75em;
+    font-weight: 600;
+    background-color: #e3efe7;
+    color: #166030;
+}
+
+.season-tab.active .season-count {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: white;
 }
 
 @media (max-width: 768px) {

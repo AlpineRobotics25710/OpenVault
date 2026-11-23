@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/images/logos/favicons/favicon.ico" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="description" content="OpenVault is your go-to resource for open-source content tailored for FIRST Tech Challenge (FTC) teams.
@@ -30,12 +29,12 @@
     {% block head %}{% endblock %}
 </head>
 
-<body id="#page-top">
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <img src="{{ url_for('static', filename='/images/logos/OpenVaultLogo.png') }}" class="d-block mx-auto"
-                    alt="Logo" style="width: 100px">
+                <img src="{{ url_for('static', filename='images/logos/OpenVaultLogo.png') }}" class="d-block mx-auto"
+                    alt="OpenVault home" style="width: 100px">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -44,63 +43,24 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {% for section in ['cad', 'code'] %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if 'cad' in active_route %}active{% endif %}" href="#"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            CAD
+                        <a class="nav-link dropdown-toggle {% if request.path.startswith('/' ~ section ~ '/') %}active{% endif %}"
+                            href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ SECTIONS[section] }}
                         </a>
                         <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item {% if active_route == 'ftc/cad/active-intakes.html' %}active{% endif %}"
-                                    href="/cad/active-intakes">Active Intakes</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item {% if active_route == 'ftc/cad/claws.html' %}active{% endif %}"
-                                    href="/cad/claws">Claws</a>
-                            </li>
-                            <li>
-                            <li><a class="dropdown-item {% if active_route == 'ftc/cad/dead-axles.html' %}active{% endif %}"
-                                    href="/cad/dead-axles">Dead Axles</a></li>
-                            <li>
-                                <a class="dropdown-item {% if active_route == 'ftc/cad/drivetrains.html' %}active{% endif %}"
-                                    href="/cad/drivetrains">Drivetrains</a>
-                            </li>
-                            <li><a class="dropdown-item {% if active_route == 'ftc/cad/outtakes.html' %}active{% endif %}"
-                                    href="/cad/outtakes">Outtakes</a></li>
-                            <li>
-                                <a class="dropdown-item {% if active_route == 'ftc/cad/power-transmissions.html' %}active{% endif %}"
-                                    href="/cad/power-transmissions">Power Transmissions</a>
-                            </li>
-                            <li><a class="dropdown-item {% if active_route == 'ftc/cad/robots.html' %}active{% endif %}"
-                                    href="/cad/robots">Robots</a></li>
+                            {% for slug, name in CATEGORIES[section].items() %}
+                            {% set href = url_for('render_page', base=section, category=slug) %}
+                            <li><a class="dropdown-item {% if request.path == href %}active{% endif %}"
+                                    href="{{ href }}">{{ name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if 'code' in active_route %}active{% endif %}" href="#"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Code
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item {% if active_route == 'ftc/code/autonomous.html' %}active{% endif %}"
-                                    href="/code/autonomous">Autonomous</a>
-                            </li>
-                            <li><a class="dropdown-item {% if active_route == 'ftc/code/full-repo.html' %}active{% endif %}"
-                                    href="/code/full-repo">Full Repos</a></li>
-                            <li>
-                                <a class="dropdown-item {% if active_route == 'ftc/code/teleop.html' %}active{% endif %}"
-                                    href="/code/teleop">TeleOp</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item {% if active_route == 'ftc/code/vision.html' %}active{% endif %}"
-                                    href="/code/vision">Vision</a>
-                            </li>
-                        </ul>
-                    </li>
+                    {% endfor %}
                     <li class="nav-item">
-                        <a class="nav-link {% if active_route == 'ftc/portfolios/portfolios.html' %}active{% endif %}"
-                            href="/portfolios/portfolios">Portfolios</a>
+                        <a class="nav-link {% if request.path.startswith('/portfolios') %}active{% endif %}"
+                            href="{{ url_for('render_page', base='portfolios', category='portfolios') }}">Portfolios</a>
                     </li>
                 </ul>
                 <a class="btn btn-light" style="color:rgb(64,133,88); margin-right: 10px;"

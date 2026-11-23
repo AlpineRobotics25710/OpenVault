@@ -1,54 +1,28 @@
 async function performSearch(query) {
-    const response = await fetch('/api/search', {
-        method: 'POST', headers: {
-            'Content-Type': 'application/json',
-        }, body: JSON.stringify({query}),
-    });
-
-    if (!response.ok) {
-        const text = await response.text();
-        console.error("Server returned error HTML:", text);
-        return;
-    }
-    //console.log(response);
-
-    const data = await response.json();
-    //console.log(data);
-
-    // Parse the HTML string from the server
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(data.template, 'text/html');
-    //console.log(data.template)
-    //console.log(doc);
-
-    // You can either replace the full body or just a specific section
-    const filteredPosts = doc.getElementById("posts-div");
-    //console.log(filteredPosts);
-    if (filteredPosts) {
-        // Replace contents of <body> without replacing the entire document
-        document.getElementById("posts-div").innerHTML = filteredPosts.innerHTML;
-    } else {
-        console.error("Parsed HTML does not contain filteredPosts");
-    }
-}
-
-function setupFormHandler() {
     const form = document.getElementById('searchForm');
-    if (!form) {
-        console.error("Form with id 'searchForm' not found!");
+    const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({query, base: form.dataset.base, category: form.dataset.category}),
+    });
+    if (!response.ok) {
+        console.error('Search failed with status', response.status);
         return;
     }
+    const data = await response.json();
+    document.getElementById('posts-div').innerHTML = data.html;
+    document.dispatchEvent(new Event('posts-updated'));
+}
 
-    form.addEventListener('submit', async function (e) {
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('searchForm');
+    const box = document.getElementById('searchBox');
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const query = document.getElementById('searchBox').value;
-        await performSearch(query);
+        performSearch(box.value);
     });
-}
-
-function clearSearch() {
-    document.getElementById("searchBox").value = ""; // Clear input
-    performSearch("") // Perform search with empty query to clear results
-}
-
-document.addEventListener('DOMContentLoaded', setupFormHandler);
+    document.getElementById('clearSearchButton').addEventListener('click', () => {
+        box.value = '';
+        performSearch('');
+    });
+});

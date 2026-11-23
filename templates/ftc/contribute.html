@@ -3,7 +3,7 @@
 {% block head %}
 <title>OpenVault - Contribute</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contribute.css') }}">
-<script src="{{ url_for('static', filename='/javascript/contribute-script.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/contribute-script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -74,12 +74,9 @@
             <label for="cadSubcategorySelect" class="form-label">Choose a CAD Subcategory</label>
             <select class="form-select" id="cadSubcategorySelect" name="cadSubcategory">
                 <option value="" disabled selected>Choose a subcategory</option>
-                <option value="active-intakes">Active Intakes</option>
-                <option value="dead-axles">Dead Axles</option>
-                <option value="drivetrains">Drivetrains</option>
-                <option value="outtakes">Outtakes</option>
-                <option value="power-transmissions">Power Transmissions</option>
-                <option value="robots">Robots</option>
+                {% for slug, name in CATEGORIES['cad'].items() %}
+                <option value="{{ slug }}">{{ name }}</option>
+                {% endfor %}
             </select>
         </div>
 
@@ -88,10 +85,9 @@
             <label for="codeSubcategorySelect" class="form-label">Choose a Code Subcategory</label>
             <select class="form-select" id="codeSubcategorySelect" name="codeSubcategory">
                 <option value="" disabled selected>Choose a subcategory</option>
-                <option value="autonomous">Autonomous</option>
-                <option value="full-repo">Full Repository</option>
-                <option value="teleop">TeleOp</option>
-                <option value="vision">Vision</option>
+                {% for slug, name in CATEGORIES['code'].items() %}
+                <option value="{{ slug }}">{{ name }}</option>
+                {% endfor %}
             </select>
         </div>
 
@@ -116,42 +112,12 @@
         <!-- Seasons Used Input -->
         <div class="mb-3">
             <label class="form-label">Seasons Used</label>
+            {% for year, name in SEASON_NAMES.items() %}
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="season2025-2026" name="seasons" value="2025-2026">
-                <label class="form-check-label" for="season2025-2026">
-                    DECODE (2025-2026)
-                </label>
+                <input class="form-check-input" type="checkbox" id="season{{ year }}" name="seasons" value="{{ year }}">
+                <label class="form-check-label" for="season{{ year }}">{{ name }} ({{ year }})</label>
             </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="season2024-2025" name="seasons" value="2024-2025">
-                <label class="form-check-label" for="season2024-2025">
-                    INTO THE DEEP (2024-2025)
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="season2023-2024" name="seasons" value="2023-2024">
-                <label class="form-check-label" for="season2023-2024">
-                    CENTERSTAGE (2023-2024)
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="season2022-2023" name="seasons" value="2022-2023">
-                <label class="form-check-label" for="season2022-2023">
-                    POWERPLAY (2022-2023)
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="season2021-2022" name="seasons" value="2021-2022">
-                <label class="form-check-label" for="season2021-2022">
-                    FREIGHT FRENZY (2021-2022)
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="season2020-2021" name="seasons" value="2020-2021">
-                <label class="form-check-label" for="season2020-2021">
-                    ULTIMATE GOAL (2020-2021)
-                </label>
-            </div>
+            {% endfor %}
         </div>
 
         <!-- Description Input -->

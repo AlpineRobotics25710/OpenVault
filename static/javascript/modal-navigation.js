@@ -1,85 +1,38 @@
-// Modal navigation functionality
+// Prev/next navigation between post modals, skipping posts hidden by the season filter.
+// Each modal directly follows its card column in the DOM (see posts.html).
+function visibleModals() {
+    return [...document.querySelectorAll('.portfolio-modal')]
+        .filter((m) => m.previousElementSibling?.style.display !== 'none');
+}
+
 function navigateModal(direction, currentModalId) {
-    // Get all modals on the page
-    const allModals = document.querySelectorAll('.portfolio-modal');
+    const modals = visibleModals();
+    const index = modals.findIndex((m) => m.id === currentModalId);
+    const next = modals[index + direction];
+    if (index === -1 || !next) return;
 
-    // Find current modal index
-    let currentIndex = -1;
-    allModals.forEach((modal, index) => {
-        if (modal.id === currentModalId) {
-            currentIndex = index;
-        }
-    });
-
-    if (currentIndex === -1) return;
-
-    // Calculate next index
-    const nextIndex = currentIndex + direction;
-
-    // Check bounds
-    if (nextIndex < 0 || nextIndex >= allModals.length) return;
-
-    // Close current modal and open next one
-    const currentModal = bootstrap.Modal.getInstance(document.getElementById(currentModalId));
-    if (currentModal) {
-        currentModal.hide();
-    }
-
-    // Wait a moment for the close animation, then open the next modal
-    setTimeout(() => {
-        const nextModal = new bootstrap.Modal(allModals[nextIndex]);
-        nextModal.show();
-
-        // Update arrow states after modal is shown
-        setTimeout(() => {
-            updateArrowStates(allModals[nextIndex].id, nextIndex, allModals.length);
-        }, 100);
-    }, 300);
+    modals[index].addEventListener('hidden.bs.modal', () => {
+        bootstrap.Modal.getOrCreateInstance(next).show();
+    }, {once: true});
+    bootstrap.Modal.getInstance(modals[index])?.hide();
 }
 
-function updateArrowStates(modalId, currentIndex, totalModals) {
-    const modal = document.getElementById(modalId);
-    if (!modal) return;
-
-    const prevArrow = modal.querySelector('.modal-nav-prev');
-    const nextArrow = modal.querySelector('.modal-nav-next');
-
-    // Disable/enable arrows based on position
-    if (prevArrow) {
-        prevArrow.disabled = currentIndex === 0;
-    }
-
-    if (nextArrow) {
-        nextArrow.disabled = currentIndex === totalModals - 1;
-    }
-}
-
-// Initialize arrow states when modals are shown
-document.addEventListener('DOMContentLoaded', function () {
-    const allModals = document.querySelectorAll('.portfolio-modal');
-
-    allModals.forEach((modal, index) => {
-        modal.addEventListener('shown.bs.modal', function () {
-            updateArrowStates(modal.id, index, allModals.length);
-        });
-    });
+// Bootstrap modal events bubble, so this also covers modals added by search.
+document.addEventListener('shown.bs.modal', (e) => {
+    const modals = visibleModals();
+    const index = modals.indexOf(e.target);
+    const prev = e.target.querySelector('.modal-nav-prev');
+    const next = e.target.querySelector('.modal-nav-next');
+    if (prev) prev.disabled = index <= 0;
+    if (next) next.disabled = index === -1 || index >= modals.length - 1;
 });
 
-// Add keyboard navigation (left/right arrows)
-document.addEventListener('keydown', function (e) {
-    // Check if a modal is currently open
-    const openModal = document.querySelector('.portfolio-modal.show');
-    if (!openModal) return;
-
-    if (e.key === 'ArrowLeft') {
-        const prevButton = openModal.querySelector('.modal-nav-prev');
-        if (prevButton && !prevButton.disabled) {
-            navigateModal(-1, openModal.id);
-        }
-    } else if (e.key === 'ArrowRight') {
-        const nextButton = openModal.querySelector('.modal-nav-next');
-        if (nextButton && !nextButton.disabled) {
-            navigateModal(1, openModal.id);
-        }
+document.addEventListener('keydown', (e) => {
+    const open = document.querySelector('.portfolio-modal.show');
+    if (!open) return;
+    if (e.key === 'ArrowLeft' && !open.querySelector('.modal-nav-prev')?.disabled) {
+        navigateModal(-1, open.id);
+    } else if (e.key === 'ArrowRight' && !open.querySelector('.modal-nav-next')?.disabled) {
+        navigateModal(1, open.id);
     }
 });

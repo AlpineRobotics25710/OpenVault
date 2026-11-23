@@ -84,12 +84,19 @@ function removeTag(tag) {
 
 function updateTagsDisplay() {
     const container = document.getElementById('tagsContainer');
-    container.innerHTML = tags.map(tag => `
-        <span class="tag-badge">
-            ${tag}
-            <span class="remove-tag" onclick="removeTag('${tag.replace(/'/g, "\\'")}')">×</span>
-        </span>
-    `).join('');
+    container.replaceChildren(...tags.map((tag) => {
+        const badge = document.createElement('span');
+        badge.className = 'tag-badge';
+        badge.textContent = tag;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'remove-tag';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', `Remove tag ${tag}`);
+        remove.addEventListener('click', () => removeTag(tag));
+        badge.append(remove);
+        return badge;
+    }));
 }
 
 function updateTagsHidden() {
@@ -109,7 +116,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// Vercel serverless functions reject request bodies over ~4.5 MB.
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+
 function validateForm() {
+    // Every chosen file is submitted, even in hidden sections, so count them all.
+    const totalBytes = [...document.querySelectorAll('input[type="file"]')]
+        .reduce((sum, input) => sum + (input.files[0]?.size || 0), 0);
+    if (totalBytes > MAX_UPLOAD_BYTES) {
+        alert('Your files add up to more than 4 MB, which is too large to upload here. ' +
+            'Please compress them, or link a GitHub repository instead of uploading a ZIP.');
+        return false;
+    }
+
     const category = document.getElementById('category').value;
 
     if (!category) {
